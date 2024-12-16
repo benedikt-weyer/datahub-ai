@@ -38,14 +38,14 @@ services:
     volumes:
       - ollama:/root/.ollama
     restart: unless-stopped
-    # runtime: nvidia
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all # alternatively, use `all` for all GPUs
-    #           capabilities: [gpu]
+    runtime: nvidia
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all # alternatively, use `all` for all GPUs
+              capabilities: [gpu]
 
   llm-query-engine:
     image: llm-query-engine:latest
@@ -55,6 +55,15 @@ services:
     depends_on:
       - postgis
       - ollama
+  test:
+    image: test:latest
+    restart: always
+    ports:
+      - "8002:8002"
+    build:
+      context: .
+      dockerfile: llm-in-container/test/Dockerfile.test
+    command: pytest
 
 volumes:
   ollama:

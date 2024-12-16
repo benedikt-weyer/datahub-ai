@@ -1,0 +1,1 @@
+"Thank you for your question. Yes, I have found precipitation data for Ghana. However, the data is only available for the period January 2021 to December 2023 in daily resolution. I can offer you two different data sources: Precipitation (satellite) (chirps_prcp) and Precipitation (station) (meteo_prcp)."
