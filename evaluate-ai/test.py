@@ -1,6 +1,8 @@
 #from ..advanced_sql_query_engine import submit_query
 from llama_index.llms.ollama import Ollama
 import re
+import requests
+
 
 def read_file(path):
     with open(path, 'r') as file:
@@ -11,11 +13,29 @@ def test_questions(llm_test, questions, expected_answers):
     n_tests = 3
     ratings = [0] * n_tests
     abs_ratings = [0] * len(questions)
+
     print("testing " + str(len(questions)) + " questions with " + str(n_tests) + " runs per question...")
+
+
     for i in range(len(questions)):
+
         for j in range(n_tests):
+
             print("testing question nr " + str(i) + ", run nr " + str(j) + "...")
-            answer = "Donald Trump ist the next President of the United States of America." #submit_query(input[i])
+
+            
+
+            url = 'http://localhost:8001/query'
+            payload = { 'query': questions[i] }
+            headers = {"Content-Type": "application/json; charset=utf-8"}
+
+            response = requests.post(url, json = payload, headers=headers)
+            print(str(response))
+
+            answer = response.json()['response']
+
+            print(answer)
+            #answer = "Donald Trump ist the next President of the United States of America." #submit_query(input[i])
             #print("question: " + questions[i])
             #print("expected answers: " + expected_answers[i] + "\n")
             #print("answer: " + answer + "\n")
@@ -93,8 +113,10 @@ def test_questions(llm_test, questions, expected_answers):
             result = llm_test.complete(prompt)
             rating = re.search(r'Rating:\s*(\d+)', result.text)
             ratings[j] = int(rating.group(1))
+
         abs_rating = sum(ratings) / len(ratings)
         abs_ratings[i] = round(abs_rating,2)
+
     print("testing complete!")
     return abs_ratings
 
@@ -107,8 +129,8 @@ questions = read_file("./evaluate-ai/questions.txt")
 expected_answers = read_file("./evaluate-ai/expected_answers.txt")
 
 # create llm
-#llm_test = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="dolphin-mistral:latest", request_timeout=30.0)
-llm_test = Ollama(base_url='http://localhost:11434', model="dolphin-llama3:latest", request_timeout=220.0)
+llm_test = Ollama(base_url='http://openmain.de:11434', model="dolphin-mistral:latest", request_timeout=30.0)
+#llm_test = Ollama(base_url='http://localhost:11434', model="dolphin-llama3:latest", request_timeout=220.0)
 
 # check testcases with llm
 ratings = test_questions(llm_test=llm_test, questions=questions, expected_answers=expected_answers)
