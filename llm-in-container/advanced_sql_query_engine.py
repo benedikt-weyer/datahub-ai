@@ -33,18 +33,27 @@ from llama_index.llms.openai import OpenAI
 from llama_index.core.prompts.base import PromptTemplate
 from llama_index.core.prompts.prompt_type import PromptType
 
+import llama_index.core
+
+ # setup Arize Phoenix for logging/observability
+import phoenix as px
+
 import dotenv
 
 def submit_query(query_str, without_docker=False):
     # Load the .env file
     dotenv.load_dotenv()
 
+   
+
+    px.launch_app()
+    llama_index.core.set_global_handler("arize_phoenix")
 
     
-    llm_synth = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="dolphin-mistral:latest", request_timeout=30.0)
+    llm_synth = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="dolphin-llama3:latest", request_timeout=30.0)
     #llm_synth = OpenAI(model="gpt-3.5-turbo")
 
-    llm_sql = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="dolphin-mistral:latest", request_timeout=30.0)
+    llm_sql = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="gemma2:9b", request_timeout=30.0)
     #llm_sql = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="mistral:latest", request_timeout=60.0)
     #llm_sql = OpenAI(model="gpt-4o-mini")
 
@@ -189,22 +198,38 @@ def submit_query(query_str, without_docker=False):
 
     table_context_string = get_table_context_str(table_schema_objs)
 
-    print(table_context_string)
-
 
     def parse_response_to_sql(response: ChatResponse) -> str:
-        """Parse response to SQL."""
-        response = response.message.content
-        sql_query_start = response.find("SQLQuery:")
+        
+
+        sql_query = ''
+
+        #extract message content
+        message_content = response.message.content
+
+        print('####')
+        print(response)
+        print('####')
+
+        #find sql query location
+        sql_query_start = message_content.find("SQLQuery:")
+        #sql_query_end = message_content.find("SQLResult:")
+
+        #extract sql query
         if sql_query_start != -1:
-            response = response[sql_query_start:]
-            # TODO: move to removeprefix after Python 3.9+
-            if response.startswith("SQLQuery:"):
-                response = response[len("SQLQuery:") :]
-        sql_result_start = response.find("SQLResult:")
-        if sql_result_start != -1:
-            response = response[:sql_result_start]
-        return response.strip().strip("```").replace("`", "").strip()
+            sql_query = message_content[sql_query_start + len("SQLQuery:"):]
+        else: 
+            #error: no sql query found
+            return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
+
+
+        #format & error correct sql query
+        sql_query = sql_query.strip()
+        sql_query = sql_query.strip("```")
+        sql_query = sql_query.replace("`", "")
+        sql_query = sql_query.strip()
+
+        return sql_query
 
 
     sql_parser_component = FnComponent(fn=parse_response_to_sql)
@@ -227,13 +252,13 @@ def submit_query(query_str, without_docker=False):
 
         "You are required to use the following format, each taking one line:\n\n"
         "Question: Question here\n"
-        "SQLQuery: SQL Query to run\n"
-        "SQLResult: Result of the SQLQuery\n"
-        "Answer: Final answer here\n\n"
+        "SQLQuery: SQL Query to run\n\n"
+        #"SQLResult: Result of the SQLQuery\n"
+        #"Answer: Final answer here\n\n"
         "Only use tables listed below.\n"
         "{schema}\n\n"
         "Question: {query_str}\n"
-        "SQLQuery: "
+        #"SQLQuery: "
     )
 
     MODIFIED_TEXT_TO_SQL_PROMPT = PromptTemplate(
@@ -243,13 +268,6 @@ def submit_query(query_str, without_docker=False):
 
     text2sql_prompt = MODIFIED_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
     #text2sql_prompt = DEFAULT_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
-
-    print(engine.dialect.name)
-
-
-    print(text2sql_prompt.template)
-
-
 
     response_synthesis_prompt_str = (
         "Given an input question, synthesize a response from the query results.\n"
@@ -328,6 +346,5 @@ def submit_query(query_str, without_docker=False):
         #query="For my research project on malaria, I need precipitation data for the period from January 2020 to December 2023. Are these data available, and in what resolution?"
         #query="What regions are found in the data?"
     )
-    print(str(response))
 
-    return str(response)
+    return str(response.message.content)
