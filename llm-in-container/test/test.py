@@ -2,32 +2,31 @@
 from llama_index.llms.ollama import Ollama
 import re
 
-#with open('test/input.txt', 'r') as file:
-#    input = [row.strip() for row in file]
+questions = []
+expected_answers = []
 
-#with open('test/expected_output.txt', 'r') as file:
-#    expected_output = [row.strip() for row in file]
+#read questions and answers
+with open('./llm-in-container/test/questions.txt', 'r') as file:
+    questions = [row.strip() for row in file]
 
-questions = ["For my research project on malaria, I need precipitation data for the period from January 2020 to December 2023. Are these data available, and in what resolution?"]
-expected_answers = ["Yes, I have found precipitation data for Ghana. However, the data is only available for the period January 2021 to December 2023 in daily resolution. I can offer you two different data sources: Precipitation (satellite) (chirps_prcp) and Precipitation (station) (meteo_prcp)."]
+with open('./llm-in-container/test/expected_answers.txt', 'r') as file:
+    expected_answers = [row.strip() for row in file]
 
 # create llm
 #llm_test = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="dolphin-mistral:latest", request_timeout=30.0)
 llm_test = Ollama(base_url='http://localhost:11434', model="dolphin-llama3:latest", request_timeout=220.0)
 
+# check testcases with llm
 n_tests = 3
 ratings = [0] * n_tests
 abs_ratings = [0] * len(questions)
-
-# check testcases with llm
 for i in range(len(questions)):
     for j in range(n_tests):
         answer = "Donald Trump ist the next President of the United States of America." #submit_query(input[i])
-        #print("Input: " + questions[i])
-        #print("expected Output: " + expected_answers[i] + "\n")
-        #print("Output: " + answer + "\n")
+        #print("question: " + questions[i])
+        #print("expected answers: " + expected_answers[i] + "\n")
+        #print("answer: " + answer + "\n")
         #prompt: compare output with expected_output
-        #prompt = "Give me a rating from 1-10 how the text \"answer\" matches text \"expected_answer\" semantically or 0 if the texts arent correlated. output = " + answer + "; expected_output = " + expected_answers[i]
 
         prompt = f"""
                     Compare the following answer with the expected answer to the question: "{questions[i]}"
