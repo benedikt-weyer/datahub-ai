@@ -48,7 +48,11 @@ services:
     #           capabilities: [gpu]
 
   llm-query-engine:
-    image: llm-query-engine:latest
+    build: 
+      dockerfile: ./llm-in-container/Dockerfile
+      context: .
+    
+    #image: llm-query-engine:latest
     restart: always
     ports:
       - "8001:8001"

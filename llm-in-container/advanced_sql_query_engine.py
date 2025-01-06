@@ -39,32 +39,39 @@ import llama_index.core
 import phoenix as px
 
 import dotenv
+import os
 
-def submit_query(query_str, without_docker=False):
+def submit_query(query_str, without_docker=False, override_ollama_api_url=None):
     # Load the .env file
     dotenv.load_dotenv()
 
+    print(os.getenv('OLLAMA_API_URL'))
+
+    # set ollama api url
+    ollama_api_url = os.getenv('OLLAMA_API_URL')
+    if override_ollama_api_url is not None:
+        ollama_api_url = override_ollama_api_url
    
 
     px.launch_app()
     llama_index.core.set_global_handler("arize_phoenix")
 
     
-    llm_synth = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="dolphin-llama3:latest", request_timeout=30.0)
+    llm_synth = Ollama(base_url=ollama_api_url, model="dolphin-llama3:latest", request_timeout=30.0)
     #llm_synth = OpenAI(model="gpt-3.5-turbo")
 
-    llm_sql = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="gemma2:9b", request_timeout=30.0)
-    #llm_sql = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="mistral:latest", request_timeout=60.0)
+    llm_sql = Ollama(base_url=ollama_api_url, model="gemma2:9b", request_timeout=30.0)
+    #llm_sql = Ollama(base_url=ollama_api_url, model="mistral:latest", request_timeout=60.0)
     #llm_sql = OpenAI(model="gpt-4o-mini")
 
 
-    #llm_summary = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="dolphin-llama3:latest", request_timeout=30.0)
+    #llm_summary = Ollama(base_url=ollama_api_url, model="dolphin-llama3:latest", request_timeout=30.0)
 
     #init embedding
     ollama_embedding = OllamaEmbedding(
         model_name="mxbai-embed-large",
         #model_name="nomic-embed-text",
-        base_url="http://benedikt-home-server.duckdns.org:11434",
+        base_url=ollama_api_url,
         #ollama_additional_kwargs={"mirostat": 0},
     )
 
