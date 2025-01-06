@@ -55,15 +55,6 @@ services:
     depends_on:
       - postgis
       - ollama
-  test:
-    image: test:latest
-    restart: always
-    ports:
-      - "8002:8002"
-    build:
-      context: .
-      dockerfile: llm-in-container/test/Dockerfile.test
-    command: pytest
 
 volumes:
   ollama:
