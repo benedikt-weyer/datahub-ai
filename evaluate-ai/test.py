@@ -103,8 +103,8 @@ def print_result(ratings):
     print("average rating: " + str(round(sum(ratings)/len(ratings),2)))
 
 #read questions and answers 
-questions = read_file("./llm-in-container/test/questions.txt")
-expected_answers = read_file("./llm-in-container/test/expected_answers.txt")
+questions = read_file("./evaluate-ai/questions.txt")
+expected_answers = read_file("./evaluate-ai/expected_answers.txt")
 
 # create llm
 #llm_test = Ollama(base_url='http://benedikt-home-server.duckdns.org:11434', model="dolphin-mistral:latest", request_timeout=30.0)
