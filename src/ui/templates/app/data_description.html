@@ -23,7 +23,19 @@
             Here you can describe the tables from your database to improve the capabilities of the chat ai. You can also provide a brief description of the columns in each table.
         </p>
 
-        
+        <button id="table">Send</button>
+
+        <script>
+            document.getElementById("table").addEventListener("click", () => {
+                fetch("http://localhost:8001/data-description",
+                    {
+                        method: "GET",
+                        headers: { "Content-Type": "application/json" },
+                    }
+                ).then(response => console.log(response))
+            });
+            
+        </script>
         
     </div>
 {% endblock %}
