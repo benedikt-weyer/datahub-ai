@@ -9,10 +9,11 @@ def data_description(request):
     #message = f'Wilkommen  endlich ! '
 
     #return render(request, 'app/hello.html')
-    data = {'message': 'Welcome to My Website!', 'status': 'success'}
-    return JsonResponse(data) 
+    #data = {'message': 'Welcome to My Website!', 'status': 'success'}
+    #return JsonResponse(data) 
     
     #return HttpResponse(message)
+    return render(request, 'app/data_description.html')
 
 
 def ai_chat(request):
