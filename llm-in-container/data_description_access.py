@@ -10,3 +10,6 @@ def get_table_names(without_docker = False):
     inspector = inspect(engine)
 
     return inspector.get_table_names()
+
+
+print(get_table_names(True))
