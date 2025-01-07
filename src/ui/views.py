@@ -2,7 +2,7 @@ import requests as r
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
-def hello(request):
+def data_description(request):
     
     #name = request.GET.get('name')
     
@@ -15,11 +15,13 @@ def hello(request):
     #return HttpResponse(message)
 
 
-def llm_engine(request):
+def ai_chat(request):
     #TODO: update this function to make a POST call to localhost:8001/query
-    q = request.GET.get('q')
+    #q = request.GET.get('q')
     
     
     
     
-    return JsonResponse({'response': f'{q}'})
+    #return JsonResponse({'response': f'{q}'})
+
+    return render(request, 'app/ai_chat.html')
