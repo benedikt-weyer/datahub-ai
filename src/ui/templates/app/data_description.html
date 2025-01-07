@@ -25,6 +25,19 @@
 
         <button id="table">Send</button>
 
+        
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="table-item" style="display: flex; align-items: center; gap: 10px;">
+                <p>meteo_prcp</p>
+                <textarea>Percipitation data</textarea>
+            </div>
+            <div class="table-item" style="display: flex; align-items: center; gap: 10px;">
+                <p>meteo_prcp</p>
+                <textarea>Percipitation data</textarea>
+            </div>
+        </div>
+
         <script>
             document.getElementById("table").addEventListener("click", () => {
                 fetch("http://localhost:8001/api/data-description",
@@ -32,7 +45,14 @@
                         method: "GET",
                         headers: { "Content-Type": "application/json" },
                     }
-                ).then(response => console.log(response))
+                )
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
             });
             
         </script>
