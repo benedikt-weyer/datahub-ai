@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, Response
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 from advanced_sql_query_engine import submit_query
 from data_description_access import get_table_names
@@ -7,9 +7,9 @@ from data_description_access import get_table_names
 # Initialize the Flask application and the LLMQueryEngine instance
 app = Flask(__name__)
 
-CORS(app,resources={r"/query": {"origins": "http://localhost:8000"}}, methods=["POST", "GET"])
+CORS(app,resources={r"/api/*": {"origins": "http://localhost:8000"}}, methods=["POST", "GET"])
 
-@app.route('/query', methods=['GET'])
+@app.route('/api/query', methods=['GET'])
 def query_get():
     # Access the query parameter from the URL
     query_string = request.args.get("query")
@@ -26,7 +26,7 @@ def query_get():
         "response": response
     })
 
-@app.route('/query', methods=['POST'])
+@app.route('/api/query', methods=['POST'])
 def query_post():
     data = request.json
     query_string = data.get("query")
@@ -42,8 +42,8 @@ def query_post():
 
 
 
-@app.route('/data-description', methods=['GET'])
-def query_get():
+@app.route('/api/data-description', methods=['GET'])
+def data_description_get():
     # Access the query parameter from the URL
     #query_string = request.args.get("query")
 
