@@ -7,7 +7,7 @@ from data_description_access import get_table_names
 # Initialize the Flask application and the LLMQueryEngine instance
 app = Flask(__name__)
 
-CORS(app,resources={r"/api/*": {"origins": "http://localhost:8000"}}, methods=["POST", "GET"])
+CORS(app,resources={r"/api/*": {"origins": "http://localhost:8000"}})
 
 @app.route('/api/query', methods=['GET'])
 def query_get():
