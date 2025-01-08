@@ -20,12 +20,33 @@
     <div class="container">
         <h1>Data Description</h1>
         <p>
-            Here you can describe the tables from your database to improve the capabilities of the chat ai. You can also provide a brief description of the columns in each table.
+            Here you can select the tables the ai uses as its data source. You can also provide a brief description of the tables and its columns.
         </p>
 
-        <button id="table">Send</button>
+        <!-- <button id="table">Send</button> -->
+        <br>
 
-        
+        <h2>Add Table</h2>
+        <form action="/data-description/" method="POST" style="display: flex; align-items: center; gap: 15px;">
+            {% csrf_token %}
+            <select name="table_name" style="padding: 3px 10px;">
+                {% for table in inactive_tables %}
+                    <option value="{{ table }}">{{ table }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Add">
+        </form>
+
+        <br>
+        <br>
+        <h2>Active Tables</h2>
+
+        <!-- <form action="/data-description/" method="POST">
+            {% csrf_token %}
+            <input type="text" name="table" placeholder="Table name">
+            <input type="text" name="description" placeholder="Table description">
+            <input type="submit" value="Send">
+        </form>
 
         <div style="display: flex; flex-direction: column; gap: 10px;">
             <div class="table-item" style="display: flex; align-items: center; gap: 10px;">
@@ -55,7 +76,7 @@
                 });
             });
             
-        </script>
+        </script> -->
         
     </div>
 {% endblock %}

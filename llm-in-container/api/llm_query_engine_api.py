@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS, cross_origin
 
-from advanced_sql_query_engine import submit_query
-from data_description_access import get_table_names
+from ai.advanced_sql_query_engine import submit_query
+
+from logic import data_description_logic
 
 # Initialize the Flask application and the LLMQueryEngine instance
 app = Flask(__name__)
 
-CORS(app,resources={r"/api/*": {"origins": "http://localhost:8000"}})
+CORS(app,resources={r"/api/*": {"origins": ["http://localhost:8000"]}})
 
 @app.route('/api/query', methods=['GET'])
 def query_get():
@@ -42,8 +43,8 @@ def query_post():
 
 
 
-@app.route('/api/data-description', methods=['GET'])
-def data_description_get():
+@app.route('/api/data-description/inactive-table-names', methods=['GET'])
+def data_description_inactive_table_names_get():
     # Access the query parameter from the URL
     #query_string = request.args.get("query")
 
@@ -52,11 +53,11 @@ def data_description_get():
 
     # Create a response using the query string
     #response = f'You just submitted the query: {query_string}'
-    table_names = get_table_names()
+    inactive_table_names = data_description_logic.get_inactive_table_names()
 
     # Return the JSON response
     return jsonify({
-        "table-names": table_names,
+        "inactive-table-names": inactive_table_names,
     })
 
 

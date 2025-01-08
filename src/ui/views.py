@@ -1,19 +1,17 @@
-import requests as r
+import requests
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 def data_description(request):
     
-    #name = request.GET.get('name')
-    
-    #message = f'Wilkommen  endlich ! '
+    inactive_tables_request = requests.get('http://datahub-ai:8001/api/data-description/inactive-table-names', params=request.GET)
 
-    #return render(request, 'app/hello.html')
-    #data = {'message': 'Welcome to My Website!', 'status': 'success'}
-    #return JsonResponse(data) 
-    
-    #return HttpResponse(message)
-    return render(request, 'app/data_description.html')
+    context = {
+        'inactive_tables': inactive_tables_request.json().get('inactive-table-names')
+    }
+
+
+    return render(request, 'app/data_description.html', context)
 
 
 def ai_chat(request):
