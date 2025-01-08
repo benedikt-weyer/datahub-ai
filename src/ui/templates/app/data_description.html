@@ -30,8 +30,8 @@
         <form action="/data-description/" method="POST" style="display: flex; align-items: center; gap: 15px;">
             {% csrf_token %}
             <select name="table_name" style="padding: 3px 10px;">
-                {% for table in inactive_tables %}
-                    <option value="{{ table }}">{{ table }}</option>
+                {% for table_name in inactive_table_names %}
+                    <option value="{{ table_name }}">{{ table_name }}</option>
                 {% endfor %}
             </select>
             <input type="submit" value="Add">

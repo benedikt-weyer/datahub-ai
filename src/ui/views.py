@@ -4,10 +4,10 @@ from django.shortcuts import render
 
 def data_description(request):
     
-    inactive_tables_request = requests.get('http://datahub-ai:8001/api/data-description/inactive-table-names', params=request.GET)
+    inactive_table_names_request = requests.get('http://datahub-ai:8001/api/data-description/inactive-table-names', params=request.GET)
 
     context = {
-        'inactive_tables': inactive_tables_request.json().get('inactive-table-names')
+        'inactive_table_names': inactive_table_names_request.json().get('inactive-table-names')
     }
 
 
