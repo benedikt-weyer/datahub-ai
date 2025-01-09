@@ -8,6 +8,8 @@ services:
     volumes:
       - ./data:/app/data/
       - ./src:/app/src/
+    depends_on:
+      - mongo
 
   postgis:
     image: postgis/postgis:16-3.4
@@ -66,8 +68,11 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: datahub_ai
     ports:
       - 27017:27017
+    volumes: 
+      - mongo:/data/db
 
   mongo-express:
     image: mongo-express
@@ -83,3 +88,4 @@ services:
 volumes:
   ollama:
   pgadmin-data:
+  mongo:

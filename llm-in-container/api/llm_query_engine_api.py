@@ -1,5 +1,8 @@
+import json
+
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS, cross_origin
+from bson import json_util
 
 from ai.advanced_sql_query_engine import submit_query
 
@@ -61,9 +64,21 @@ def data_description_inactive_table_names_get():
     })
 
 
+@app.route('/api/data-description/active-tables', methods=['GET'])
+def data_description_active_tables_get():
+
+    active_tables = data_description_logic.get_active_tables()
+
+    # Return the JSON response
+    return jsonify({
+        "active-tables": parse_json(active_tables)
+    })
 
 
 
+
+def parse_json(data):
+    return json.loads(json_util.dumps(data))
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8001)

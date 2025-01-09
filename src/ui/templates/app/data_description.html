@@ -40,6 +40,28 @@
         <br>
         <br>
         <h2>Active Tables</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            {% for table in active_tables %}
+                <div class="table-item active-table" style="display: flex; align-items: center; gap: 10px;">
+                    <form action="/data-description/" method="POST"  style="display: flex; align-items: center; gap: 10px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="table_name" value="{{ table.table_name }}">
+                        
+                        <p style="width: 200px;">{{ table.table_name }}</p>
+                        <textarea>{{ table.table_description }}</textarea>
+
+                        <input type="submit" value="Update">
+                    </form>
+
+                    <!-- <form action="/data-description/" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="table_name" value="{{ table.name }}">
+                        <input type="submit" value="Remove">
+                    </form> -->
+                </div>
+            {% endfor %}
+        </div>
 
         <!-- <form action="/data-description/" method="POST">
             {% csrf_token %}
