@@ -106,6 +106,19 @@ def data_description_active_tables_put():
         "table_description": table_description,
     })
 
+@app.route('/api/data-description/active-tables', methods=['DELETE'])
+def data_description_active_tables_delete():
+    data = request.json
+    table_name = data.get("table_name")
+    
+    if not table_name:
+        return jsonify({"error": "Missing 'table_name' parameter"}), 400
+    
+    response = data_description_logic.remove_table(table_name)
+    return jsonify({
+        "table_name": table_name,
+    })
+
 
 
 

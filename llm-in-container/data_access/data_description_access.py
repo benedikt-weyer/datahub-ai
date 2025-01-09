@@ -31,3 +31,10 @@ def update_table(table_name, description):
     )
 
     return result
+
+
+def remove_table(table_name):
+    
+    result = datahub_ai_db.active_tables.delete_one({'table_name': table_name})
+
+    return result

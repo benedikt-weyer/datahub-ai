@@ -35,3 +35,9 @@ def update_table(table_name, table_description):
 
     return updated_table
 
+
+def remove_table(table_name):
+    # remove table from active tables
+    removed_table = data_description_access.remove_table(table_name)
+
+    return removed_table

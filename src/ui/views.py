@@ -37,6 +37,19 @@ def data_description(request):
             except requests.RequestException as e:
                 return JsonResponse({'error': 'Failed to add table', 'details': str(e)}, status=500)
         
+        if form_type == 'remove_table':
+            table_name = request.POST.get('table_name')
+            
+            try:
+                response = requests.delete(
+                    'http://datahub-ai:8001/api/data-description/active-tables',
+                    json={'table_name': table_name}
+                )
+                response.raise_for_status()
+            except requests.RequestException as e:
+                return JsonResponse({'error': 'Failed to remove table', 'details': str(e)}, status=500)
+        
+        
     # --fetch data--
     try:
         inactive_table_names_request = requests.get('http://datahub-ai:8001/api/data-description/inactive-table-names', params=request.GET)

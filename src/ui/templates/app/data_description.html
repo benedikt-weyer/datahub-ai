@@ -57,51 +57,16 @@
                         <input type="submit" value="Update">
                     </form>
 
-                    <!-- <form action="/data-description/" method="POST">
+                    <form action="/data-description/" method="POST">
                         {% csrf_token %}
-                        <input type="hidden" name="table_name" value="{{ table.name }}">
+                        <input type="hidden" name="form_type" value="remove_table">
+                        <input type="hidden" name="table_name" value="{{ table.table_name }}">
                         <input type="submit" value="Remove">
-                    </form> -->
+                    </form> 
                 </div>
             {% endfor %}
         </div>
 
-        <!-- <form action="/data-description/" method="POST">
-            {% csrf_token %}
-            <input type="text" name="table" placeholder="Table name">
-            <input type="text" name="description" placeholder="Table description">
-            <input type="submit" value="Send">
-        </form>
-
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-            <div class="table-item" style="display: flex; align-items: center; gap: 10px;">
-                <p>meteo_prcp</p>
-                <textarea>Percipitation data</textarea>
-            </div>
-            <div class="table-item" style="display: flex; align-items: center; gap: 10px;">
-                <p>meteo_prcp</p>
-                <textarea>Percipitation data</textarea>
-            </div>
-        </div>
-
-        <script>
-            document.getElementById("table").addEventListener("click", () => {
-                fetch("http://localhost:8001/api/data-description",
-                    {
-                        method: "GET",
-                        headers: { "Content-Type": "application/json" },
-                    }
-                )
-                .then(response => response.json())
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
-            });
-            
-        </script> -->
         
     </div>
 {% endblock %}
