@@ -3,18 +3,41 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 def data_description(request):
-    # form processing
+    # --form processing--
     if request.method == 'POST':
-        table_name = request.POST.get('table_name')
-        if table_name:
+        form_type = request.POST.get('form_type')
+        
+        if form_type == 'update_table':
+            table_name = request.POST.get('table_name')
+            table_description = request.POST.get('table_description')
+            
             try:
-                response = requests.post('http://datahub-ai:8001/api/data-description/active-tables', json={'table_name': table_name})
+                response = requests.put(
+                    'http://datahub-ai:8001/api/data-description/active-tables',
+                    json={
+                        'table_name': table_name,
+                        'table_description': table_description
+                    }
+                )
+                response.raise_for_status()
+            except requests.RequestException as e:
+                return JsonResponse({'error': 'Failed to update table description', 'details': str(e)}, status=500)
+        
+        if form_type == 'add_table':
+            table_name = request.POST.get('table_name')
+            
+            try:
+                response = requests.post(
+                    'http://datahub-ai:8001/api/data-description/active-tables',
+                    json={
+                        'table_name': table_name
+                    }
+                )
                 response.raise_for_status()
             except requests.RequestException as e:
                 return JsonResponse({'error': 'Failed to add table', 'details': str(e)}, status=500)
-
-
-
+        
+    # --fetch data--
     try:
         inactive_table_names_request = requests.get('http://datahub-ai:8001/api/data-description/inactive-table-names', params=request.GET)
         inactive_table_names_request.raise_for_status()

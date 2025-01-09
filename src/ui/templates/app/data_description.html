@@ -29,6 +29,8 @@
         <h2>Add Table</h2>
         <form action="/data-description/" method="POST" style="display: flex; align-items: center; gap: 15px;">
             {% csrf_token %}
+            <input type="hidden" name="form_type" value="add_table">
+
             <select name="table_name" style="padding: 3px 10px;">
                 {% for table_name in inactive_table_names %}
                     <option value="{{ table_name }}">{{ table_name }}</option>
@@ -46,10 +48,11 @@
                 <div class="table-item active-table" style="display: flex; align-items: center; gap: 10px;">
                     <form action="/data-description/" method="POST"  style="display: flex; align-items: center; gap: 10px;">
                         {% csrf_token %}
+                        <input type="hidden" name="form_type" value="update_table">
                         <input type="hidden" name="table_name" value="{{ table.table_name }}">
                         
                         <p style="width: 200px;">{{ table.table_name }}</p>
-                        <textarea>{{ table.table_description }}</textarea>
+                        <textarea name="table_description">{{ table.table_description }}</textarea>
 
                         <input type="submit" value="Update">
                     </form>

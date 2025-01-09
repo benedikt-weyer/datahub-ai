@@ -18,6 +18,16 @@ def add_table(table_name, description):
         'table_description': description
     }
 
-    datahub_ai_db.active_tables.insert_one(table)
+    result = datahub_ai_db.active_tables.insert_one(table)
 
-    return table
+    return result
+
+
+def update_table(table_name, description):
+    
+    result = datahub_ai_db.active_tables.update_one(
+        {'table_name': table_name},
+        {'$set': {'table_description': description}}
+    )
+
+    return result

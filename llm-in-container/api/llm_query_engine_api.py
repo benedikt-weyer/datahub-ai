@@ -85,7 +85,25 @@ def data_description_active_tables_post():
     response = data_description_logic.add_table_without_description(table_name)
     return jsonify({
         "table_name": table_name,
-        "response": response,
+    })
+
+@app.route('/api/data-description/active-tables', methods=['PUT'])
+def data_description_active_tables_put():
+    data = request.json
+    table_name = data.get("table_name")
+    table_description = data.get("table_description")
+    
+    if not table_name:
+        return jsonify({"error": "Missing 'table_name' parameter"}), 400
+    
+    if not table_description:
+        return jsonify({"error": "Missing 'table_description' parameter"}), 400
+    
+    response = data_description_logic.update_table(table_name, table_description)
+
+    return jsonify({
+        "table_name": table_name,
+        "table_description": table_description,
     })
 
 
