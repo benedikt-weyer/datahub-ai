@@ -20,3 +20,8 @@ def get_active_tables():
     active_tables = data_description_access.get_active_tables()
 
     return active_tables
+
+
+def add_table_without_description(table_name):
+    # add table to active tables without description
+    data_description_access.add_table(table_name, 'No description available')

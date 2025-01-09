@@ -74,6 +74,20 @@ def data_description_active_tables_get():
         "active-tables": parse_json(active_tables)
     })
 
+@app.route('/api/data-description/active-tables', methods=['POST'])
+def data_description_active_tables_post():
+    data = request.json
+    table_name = data.get("table_name")
+    
+    if not table_name:
+        return jsonify({"error": "Missing 'table_name' parameter"}), 400
+    
+    response = data_description_logic.add_table_without_description(table_name)
+    return jsonify({
+        "table_name": table_name,
+        "response": response,
+    })
+
 
 
 

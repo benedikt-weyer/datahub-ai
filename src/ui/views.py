@@ -3,6 +3,18 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 
 def data_description(request):
+    # form processing
+    if request.method == 'POST':
+        table_name = request.POST.get('table_name')
+        if table_name:
+            try:
+                response = requests.post('http://datahub-ai:8001/api/data-description/active-tables', json={'table_name': table_name})
+                response.raise_for_status()
+            except requests.RequestException as e:
+                return JsonResponse({'error': 'Failed to add table', 'details': str(e)}, status=500)
+
+
+
     try:
         inactive_table_names_request = requests.get('http://datahub-ai:8001/api/data-description/inactive-table-names', params=request.GET)
         inactive_table_names_request.raise_for_status()
