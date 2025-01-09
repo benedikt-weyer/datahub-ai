@@ -24,4 +24,4 @@ RUN pip install -r requirements.txt
 EXPOSE 8001
 
 # Run the Flask app when the container starts
-CMD ["python", "-m", "llm_query_engine_api"]
+CMD ["python", "-m", "api.llm_query_engine_api"]

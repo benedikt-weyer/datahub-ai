@@ -15,3 +15,4 @@ pyvis
 
 arize-phoenix
 llama-index-callbacks-arize-phoenix
+pymongo

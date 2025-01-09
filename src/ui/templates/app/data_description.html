@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Data Description
+{% endblock %}
+
+{% block styles %}
+    <style>
+        .container {
+            margin: 20px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1>Data Description</h1>
+        <p>
+            Here you can select the tables the ai uses as its data source. You can also provide a brief description of the tables and its columns.
+        </p>
+
+        <!-- <button id="table">Send</button> -->
+        <br>
+
+        <h2>Add Table</h2>
+        <form action="/data-description/" method="POST" style="display: flex; align-items: center; gap: 15px;">
+            {% csrf_token %}
+            <input type="hidden" name="form_type" value="add_table">
+
+            <select name="table_name" style="padding: 3px 10px;">
+                {% for table_name in inactive_table_names %}
+                    <option value="{{ table_name }}">{{ table_name }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Add">
+        </form>
+
+        <br>
+        <br>
+        <h2>Active Tables</h2>
+        
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            {% for table in active_tables %}
+                <div class="table-item active-table" style="display: flex; align-items: center; gap: 10px;">
+                    <form action="/data-description/" method="POST"  style="display: flex; align-items: center; gap: 10px;">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="update_table">
+                        <input type="hidden" name="table_name" value="{{ table.table_name }}">
+                        
+                        <p style="width: 200px;">{{ table.table_name }}</p>
+                        <textarea name="table_description">{{ table.table_description }}</textarea>
+
+                        <input type="submit" value="Update">
+                    </form>
+
+                    <form action="/data-description/" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="form_type" value="remove_table">
+                        <input type="hidden" name="table_name" value="{{ table.table_name }}">
+                        <input type="submit" value="Remove">
+                    </form> 
+                </div>
+            {% endfor %}
+        </div>
+
+        
+    </div>
+{% endblock %}
