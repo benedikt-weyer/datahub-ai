@@ -12,22 +12,6 @@ app = Flask(__name__)
 
 CORS(app,resources={r"/api/*": {"origins": ["http://localhost:8000"]}})
 
-@app.route('/api/query', methods=['GET'])
-def query_get():
-    # Access the query parameter from the URL
-    query_string = request.args.get("query")
-
-    if not query_string:
-        return jsonify({"error": "Missing 'query' parameter"}), 400
-
-    # Create a response using the query string
-    response = f'You just submitted the query: {query_string}'
-
-    # Return the JSON response
-    return jsonify({
-        "query": query_string,
-        "response": response
-    })
 
 @app.route('/api/query', methods=['POST'])
 def query_post():
@@ -38,11 +22,15 @@ def query_post():
     if not query_string:
         return jsonify({"error": "Missing 'query' parameter"}), 400
     
-    response = query_logic.query_ai(query_string, is_verbose)
+    if not is_verbose:
+        is_verbose = False
+    
+    result = query_logic.query_ai(query_string, is_verbose)
 
     return jsonify({
         "query": query_string,
-        "response": response,
+        "response": result.get("response"),
+        "verbose_output": result.get("verbose_output"),
     })
 
 

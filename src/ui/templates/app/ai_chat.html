@@ -118,11 +118,16 @@
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ 
 					query: query,
-					isVerbose: isVerbose
+					is_verbose: isVerbose
 				})
 			})
 			.then((response) => response.json())
 			.then((data) => {
+				//Add verose output
+				if(data.verbose_output){
+					addMessageToChat(data.verbose_output, "assistant-message");
+				}
+
 				// Add assistant's response
 				addMessageToChat(data.response, "assistant-message");
 			})

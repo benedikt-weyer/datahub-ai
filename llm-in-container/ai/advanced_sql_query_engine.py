@@ -279,4 +279,14 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
         #query="What regions are found in the data?"
     )
 
-    return str(response.message.content)
+    verbose_output = 'verbose'
+
+    if is_verbose:
+        return {
+            "response": str(response.message.content),
+            "verbose_output": verbose_output
+        }
+    else:
+        return {
+            "response": str(response.message.content)
+        }
