@@ -9,7 +9,7 @@
 			background-color: #f9f9f9;
 		}
 		#chat-container {
-			height: 90vh;
+			height: 80vh;
 			overflow-y: auto;
 			padding: 10px;
 			display: flex;
@@ -76,6 +76,45 @@
 			padding: 0px 10px;
 			gap: 5px;
 		}
+
+		.loader2 {
+			width: 48px;
+			height: 48px;
+			margin: 10px 50px;
+			border: 5px solid #007bff;
+			border-bottom-color: transparent;
+			border-radius: 50%;
+			display: inline-block;
+			box-sizing: border-box;
+			animation: rotation 1s linear infinite;
+			}
+
+			@keyframes rotation {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+
+		.loader {
+			width: 40px;
+			margin: 10px 50px;
+			display: inline-block;
+			box-sizing: border-box;
+			aspect-ratio: 1;
+			--_c:no-repeat radial-gradient(farthest-side,#007bff 92%,#0000);
+			background: 
+				var(--_c) top,
+				var(--_c) left,
+				var(--_c) right,
+				var(--_c) bottom;
+			background-size: 12px 12px;
+			animation: l7 1s infinite;
+		}
+		@keyframes l7 {to{transform: rotate(.5turn)}}
 	</style>
 {% endblock %}
 
@@ -108,6 +147,9 @@
 
 			// Add user's message to the chat container
 			addMessageToChat(query, "user-message");
+			
+			// add inital assistant message with loader
+			const loaderAssistantMessageDiv = addMessageToChat('<span class="loader2"></span>', "assistant-message");
 
 			userInput.value = ""; // Clear input box
 
@@ -123,20 +165,26 @@
 			})
 			.then((response) => response.json())
 			.then((data) => {
+
+				// Remove loader
+				loaderAssistantMessageDiv.remove();
+
 				//Add verose output
 				if(data.verbose_output){
 					addMessageToChat(data.verbose_output, "assistant-message");
+					
 				}
 
 				// Add assistant's response
 				addMessageToChat(data.response, "assistant-message");
 			})
 			.catch((error) => {
+				// Remove loader
+				loaderAssistantMessageDiv.remove();
+				// conole log error
 				console.error("Error:", error);
-				addMessageToChat(
-					"Error: Unable to fetch response.",
-					"assistant-message"
-				);
+				// Add assistant's response
+				addMessageToChat("Error: Unable to fetch response.", "assistant-message");			
 			});
 
 		}
@@ -163,6 +211,8 @@
 
 			// Scroll to the bottom
 			chatContainer.scrollTop = chatContainer.scrollHeight;
+
+			return messageDiv;
 		}
 
 		function handleEnter(event) {
