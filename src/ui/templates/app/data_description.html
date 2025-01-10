@@ -46,13 +46,13 @@
         <div style="display: flex; flex-direction: column; gap: 10px;">
             {% for table in active_tables %}
                 <div class="table-item active-table" style="display: flex; align-items: center; gap: 10px;">
-                    <form action="/data-description/" method="POST"  style="display: flex; align-items: center; gap: 10px;">
+                    <form action="/data-description/" method="POST"  style="display: flex; align-items: center; gap: 10px; flex-grow: 1;">
                         {% csrf_token %}
                         <input type="hidden" name="form_type" value="update_table">
                         <input type="hidden" name="table_name" value="{{ table.table_name }}">
                         
                         <p style="width: 200px;">{{ table.table_name }}</p>
-                        <textarea name="table_description">{{ table.table_description }}</textarea>
+                        <textarea style="flex-grow: 1;" name="table_description" rows="4">{{ table.table_description }}</textarea>
 
                         <input type="submit" value="Update">
                     </form>
