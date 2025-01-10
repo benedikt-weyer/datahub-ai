@@ -35,7 +35,7 @@ import phoenix as px
 
 verbose_output_submit_query = str()
 
-def submit_query(query_str, is_verbose, without_docker=False, override_ollama_api_url=None):
+def submit_query(query_string, is_verbose, without_docker=False, override_ollama_api_url=None):
     global verbose_output_submit_query
     verbose_output_submit_query = str()
 
@@ -96,11 +96,13 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
     print(table_infos, flush=True)
 
     formated_table_infos = '\n'.join(str(table.get('table_name') + ': ' + table.get('table_description')) for table in table_infos)
-    verbose_output_submit_query += f"<b>Used tables and their description:</b>\n {formated_table_infos}\n\n"
+    verbose_output_submit_query += f"<b>Available tables and their description:</b>\n {formated_table_infos}\n\n"
 
 
 
     def get_table_context_str(table_schema_objs: List[SQLTableSchema]):
+        global verbose_output_submit_query 
+
         """Get table context string."""
         context_strs = []
         for table_schema_obj in table_schema_objs:
@@ -113,6 +115,10 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
                 table_info += table_opt_context
 
             context_strs.append(table_info)
+
+        formated_selected_table_infos = '\n'.join(context_strs)
+        verbose_output_submit_query += f"<b>Selected tables and their description:</b>\n {formated_selected_table_infos}\n\n"
+
         return "\n\n".join(context_strs)
 
     table_parser_component = FnComponent(fn=get_table_context_str)
@@ -148,6 +154,8 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
         "Be careful to not query for columns that do not exist. "
         "Pay attention to which column is in which table. "
         "Also, qualify column names with the table name when needed. "
+        "'id' is not short for 'index'"
+        "When asked for a shape/shapes, make the sql query return the name of the shape/shapes"
 
         "Provide an valid Postgres SQL statement."
         #"Do NOT use aliases (like AS)."
@@ -215,10 +223,9 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
     response_synthesis_prompt_str = (
         "Given an input question, synthesize a response from the query results.\n"
         "Also always mention the queried tables aka the used datasources. \n"
-        "Query: {query_str}\n"
+        "Question: {query_str}\n"
         "SQL: {sql_query}\n"
         "SQL Response: {context_str}\n"
-        "Response: "
     )
     response_synthesis_prompt = PromptTemplate(
         response_synthesis_prompt_str,
@@ -277,7 +284,7 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
 
 
     response = qp.run(
-        query=query_str
+        query=query_string
         #query="I need a quick overview of the Ada East district, Ghana. How large is this district and how many people live there?"
         #query="I need the location of all schools in Kumasi district, Ghana. Is this dataset available?"
         #query="For my research project on malaria, I need precipitation data for the period from January 2020 to December 2023. Are these data available, and in what resolution?"
