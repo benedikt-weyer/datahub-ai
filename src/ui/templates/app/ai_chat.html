@@ -148,9 +148,14 @@
 			const messageDiv = document.createElement("div");
 			messageDiv.className = `message ${className}`;
 
+			//format text
+			// Replace newline characters with <br> tags for line breaks
+			let formatedText = text.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
 			// Create the text bubble
 			const messageBubble = document.createElement("p");
-			messageBubble.textContent = text;
+			messageBubble.innerHTML = formatedText;
+			console.log(formatedText);
 
 			// Append elements
 			messageDiv.appendChild(messageBubble);

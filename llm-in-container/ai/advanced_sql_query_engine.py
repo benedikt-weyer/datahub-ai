@@ -1,53 +1,50 @@
-from logic import data_description_logic
-
-from sqlalchemy import create_engine, MetaData, inspect
+import os
+import dotenv
+from typing import List
+from IPython.display import display, HTML
+from pyvis.network import Network
+from sqlalchemy import create_engine
 
 from llama_index.llms.ollama import Ollama
+from llama_index.llms.openai import OpenAI
+from llama_index.embeddings.ollama import OllamaEmbedding
+from llama_index.core import (
+    SQLDatabase,
+    VectorStoreIndex,
+    PromptTemplate,
+    set_global_handler
+)
 from llama_index.core.objects import (
     SQLTableNodeMapping,
     ObjectIndex,
-    SQLTableSchema,
-)
-from llama_index.core import SQLDatabase, VectorStoreIndex
-from llama_index.embeddings.ollama import OllamaEmbedding
-
-from llama_index.core.retrievers import SQLRetriever
-
-from llama_index.core.retrievers import SQLRetriever
-from typing import List
-from llama_index.core.query_pipeline import FnComponent
-
-from llama_index.core.objects import (
     SQLTableSchema
 )
-
-from llama_index.core.prompts.default_prompts import DEFAULT_TEXT_TO_SQL_PROMPT
-from llama_index.core import PromptTemplate
-from llama_index.core.query_pipeline import FnComponent
+from llama_index.core.retrievers import SQLRetriever
+from llama_index.core.query_pipeline import (
+    QueryPipeline as QP,
+    FnComponent,
+    InputComponent
+)
+from llama_index.core.prompts.prompt_type import PromptType
 from llama_index.core.llms import ChatResponse
 
-from IPython.display import display, HTML
+from logic import data_description_logic
 
-from pyvis.network import Network
 
-from llama_index.llms.openai import OpenAI
-
-from llama_index.core.prompts.base import PromptTemplate
-from llama_index.core.prompts.prompt_type import PromptType
-
-import llama_index.core
-
- # setup Arize Phoenix for logging/observability
 import phoenix as px
 
-import dotenv
-import os
+verbose_output_submit_query = str()
 
 def submit_query(query_str, is_verbose, without_docker=False, override_ollama_api_url=None):
+    global verbose_output_submit_query
+    verbose_output_submit_query = str()
+
     # Load the .env file
     dotenv.load_dotenv()
 
     print(os.getenv('OLLAMA_API_URL'))
+    verbose_output_submit_query += f"<b>OLLAMA API URL</b>: {os.getenv('OLLAMA_API_URL')}\n\n"
+    
 
     # set ollama api url
     ollama_api_url = os.getenv('OLLAMA_API_URL')
@@ -56,26 +53,31 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
    
 
     px.launch_app()
-    llama_index.core.set_global_handler("arize_phoenix")
+    set_global_handler("arize_phoenix")
 
+    llm_ollama_model_embedding = "mxbai-embed-large:latest"
+    #llm_ollama_model_embedding = "nomic-embed-text:latest"
+    llm_ollama_model_sql = "gemma2:9b"
+    llm_ollama_model_synth = "dolphin-llama3:latest"
+
+    verbose_output_submit_query += f"<b>Model for Embedding:</b> {llm_ollama_model_embedding}\n"
+    verbose_output_submit_query += f"<b>Model for SQL generation:</b> {llm_ollama_model_sql}\n"
+    verbose_output_submit_query += f"<b>Model for Response Synthesis:</b> {llm_ollama_model_synth}\n\n"
     
-    llm_synth = Ollama(base_url=ollama_api_url, model="dolphin-llama3:latest", request_timeout=30.0)
-    #llm_synth = OpenAI(model="gpt-3.5-turbo")
 
-    llm_sql = Ollama(base_url=ollama_api_url, model="gemma2:9b", request_timeout=30.0)
-    #llm_sql = Ollama(base_url=ollama_api_url, model="mistral:latest", request_timeout=60.0)
+    llm_sql = Ollama(base_url=ollama_api_url, model=llm_ollama_model_sql, request_timeout=30.0)
     #llm_sql = OpenAI(model="gpt-4o-mini")
-
-
-    #llm_summary = Ollama(base_url=ollama_api_url, model="dolphin-llama3:latest", request_timeout=30.0)
+    
+    llm_synth = Ollama(base_url=ollama_api_url, model=llm_ollama_model_synth, request_timeout=30.0)
+    #llm_synth = OpenAI(model="gpt-3.5-turbo")
 
     #init embedding
     ollama_embedding = OllamaEmbedding(
-        model_name="mxbai-embed-large",
-        #model_name="nomic-embed-text",
+        model_name=llm_ollama_model_embedding,
         base_url=ollama_api_url,
         #ollama_additional_kwargs={"mirostat": 0},
     )
+
 
     #create database engine
     database_url = f'postgresql://didex:didex@{"localhost" if without_docker else "postgis"}:5432/didex'
@@ -92,6 +94,9 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
     # get table infos / table descriptions + active tables
     table_infos = data_description_logic.get_active_tables()
     print(table_infos, flush=True)
+
+    formated_table_infos = '\n'.join(str(table.get('table_name') + ': ' + table.get('table_description')) for table in table_infos)
+    verbose_output_submit_query += f"<b>Used tables and their description:</b>\n {formated_table_infos}\n\n"
 
 
 
@@ -131,41 +136,6 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
 
 
 
-    def parse_response_to_sql(response: ChatResponse) -> str:
-        
-
-        sql_query = ''
-
-        #extract message content
-        message_content = response.message.content
-
-        print('####')
-        print(response)
-        print('####')
-
-        #find sql query location
-        sql_query_start = message_content.find("SQLQuery:")
-        #sql_query_end = message_content.find("SQLResult:")
-
-        #extract sql query
-        if sql_query_start != -1:
-            sql_query = message_content[sql_query_start + len("SQLQuery:"):]
-        else: 
-            #error: no sql query found
-            return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
-
-
-        #format & error correct sql query
-        sql_query = sql_query.strip()
-        sql_query = sql_query.strip("```")
-        sql_query = sql_query.replace("`", "")
-        sql_query = sql_query.strip()
-
-        return sql_query
-
-
-    sql_parser_component = FnComponent(fn=parse_response_to_sql)
-
     MODIFIED_TEXT_TO_SQL_TMPL = (
         "Given an input question, first create a syntactically correct {dialect} "
         "query to run, then look at the results of the query and return the answer. "
@@ -198,8 +168,49 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
         prompt_type=PromptType.TEXT_TO_SQL,
     )
 
+    verbose_output_submit_query += f"<b>Text-to-SQL Prompt:</b> \n{MODIFIED_TEXT_TO_SQL_TMPL}\n\n"
+
     text2sql_prompt = MODIFIED_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
     #text2sql_prompt = DEFAULT_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
+
+    def parse_response_to_sql(response: ChatResponse) -> str:
+        global verbose_output_submit_query 
+        sql_query = ''
+
+        #extract message content
+        message_content = response.message.content
+
+        print('####')
+        print(response)
+        print('####')
+
+        verbose_output_submit_query += f"<b>Raw SQL generation response message content:</b> {message_content}\n"
+
+        #find sql query location
+        sql_query_start = message_content.find("SQLQuery:")
+        #sql_query_end = message_content.find("SQLResult:")
+
+        #extract sql query
+        if sql_query_start != -1:
+            sql_query = message_content[sql_query_start + len("SQLQuery:"):]
+        else: 
+            #error: no sql query found
+            return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
+
+
+        #format & error correct sql query
+        sql_query = sql_query.strip()
+        sql_query = sql_query.strip("```")
+        sql_query = sql_query.replace("`", "")
+        sql_query = sql_query.strip()
+
+        verbose_output_submit_query += f"<b>Formatted SQL query:</b> {sql_query}\n"
+
+        return sql_query
+
+
+    sql_parser_component = FnComponent(fn=parse_response_to_sql)
+
 
     response_synthesis_prompt_str = (
         "Given an input question, synthesize a response from the query results.\n"
@@ -213,13 +224,8 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
         response_synthesis_prompt_str,
     )
 
+    verbose_output_submit_query += f"<b>Response-Synthesis Prompt:</b> \n{response_synthesis_prompt_str}\n\n"
 
-    from llama_index.core.query_pipeline import (
-        QueryPipeline as QP,
-        Link,
-        InputComponent,
-        CustomQueryComponent,
-    )
 
     qp = QP(
         modules={
@@ -235,7 +241,6 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
         },
         verbose=True,
     )
-
 
     qp.add_chain(["input", "table_retriever", "table_output_parser"])
     qp.add_link("input", "text2sql_prompt", dest_key="query_str")
@@ -279,12 +284,12 @@ def submit_query(query_str, is_verbose, without_docker=False, override_ollama_ap
         #query="What regions are found in the data?"
     )
 
-    verbose_output = 'verbose'
+    
 
     if is_verbose:
         return {
             "response": str(response.message.content),
-            "verbose_output": verbose_output
+            "verbose_output": verbose_output_submit_query
         }
     else:
         return {
