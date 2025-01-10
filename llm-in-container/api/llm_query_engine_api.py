@@ -4,9 +4,8 @@ from flask import Flask, request, jsonify, Response
 from flask_cors import CORS, cross_origin
 from bson import json_util
 
-from ai.advanced_sql_query_engine import submit_query
 
-from logic import data_description_logic
+from logic import data_description_logic, query_logic
 
 # Initialize the Flask application and the LLMQueryEngine instance
 app = Flask(__name__)
@@ -34,11 +33,13 @@ def query_get():
 def query_post():
     data = request.json
     query_string = data.get("query")
+    is_verbose = data.get("is_verbose")
     
     if not query_string:
         return jsonify({"error": "Missing 'query' parameter"}), 400
     
-    response = submit_query(query_string)
+    response = query_logic.query_ai(query_string, is_verbose)
+
     return jsonify({
         "query": query_string,
         "response": response,

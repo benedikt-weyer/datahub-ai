@@ -43,7 +43,7 @@ import phoenix as px
 import dotenv
 import os
 
-def submit_query(query_str, without_docker=False, override_ollama_api_url=None):
+def submit_query(query_str, is_verbose, without_docker=False, override_ollama_api_url=None):
     # Load the .env file
     dotenv.load_dotenv()
 
