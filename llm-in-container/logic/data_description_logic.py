@@ -17,7 +17,7 @@ def get_inactive_table_names():
 
 def get_active_tables():
     # get all active tables from mongo db
-    active_tables = data_description_access.get_active_tables()
+    active_tables = data_description_access.get_active_tables().to_list()
 
     return active_tables
 
