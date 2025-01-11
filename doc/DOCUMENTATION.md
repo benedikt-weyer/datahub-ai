@@ -81,7 +81,7 @@ Run the following command to create a new user with which you can log in into th
 
 ## Architechture and Design
 
-![architechture picture](./pictures/uml.png)
+![architechture picture](./pictures/uml.svg)
 
 ### Key Decisions
 
