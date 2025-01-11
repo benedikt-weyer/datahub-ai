@@ -29,9 +29,9 @@ If you change the `.env` file run the following command to apply the changes:
 
     $ docker compose up -d
 
-Now either import an existing data dump, or create a new instance.
+Now either import an existing data dump, or create a new instance. Steps for importing an existing dump is below.
 
-If you get the error "Cannot connect to the Docker daemon at..." this means your Docker is not running, try starting Docker and running the command again
+If you get the error "Cannot connect to the Docker daemon at..." this means your Docker is not running, try starting Docker and running the command again.
 
 ### Preparing the Data-Dump
 
@@ -43,7 +43,7 @@ Run the following command from the root of the repository:
 
     $ docker compose exec datahub python manage.py restore ./data/<downloaded *.dump file>
 
-### Installing Ollama
+### [dev] Installing Ollama
 
 Go to [Ollama Website](https://ollama.com/download) and download for your operating system.
 
@@ -52,7 +52,7 @@ After the installation is complete go to the
 After that you can download and install the required model
 with the following command: `$ docker compose exec ollama ollama pull dolphin-llama3:latest`
 
-### Creating a Virtual Environment
+### [dev] Creating a Virtual Environment
 
 This documentation uses Anaconda Distribution as Python Environment Manager. You can use any environment manager you like
 
@@ -65,17 +65,25 @@ Create a new virtual environment wit the following command : `conda create -n <n
 After that you can activate the virtual environment with: `conda activate <name of your virtual environment>`,
 And deactivate with : `conda deactivate <name of your virtual environment>`
 
-### Creating a Django-Superuser
+### [dev] Creating a Django-Superuser
 
 Run the following command to create a new user with which you can log in into the backend ([http://localhost:8000/admin](http://localhost:8000/)):
 
     $ docker compose exec datahub python manage.py createsuperuser
 
-### Building the Language Model Container
-
 ### Composing together the rest of the required Containers
 
+After importing the data dump you are ready to build the container that will communicate with the language model.
+
+To do this, run the following command in the root directory: `$ docker compose build`
+
+You need an active internet connection for the build.
+
+After the process is complete you can now use the AI Chat in the Datahub interface.
+
 ### Reaching the Interface
+
+The interface is avaliable under [this link](http://localhost:8000/ai-chat).
 
 ### Implementing Local Changes and Adding other Extensions
 
