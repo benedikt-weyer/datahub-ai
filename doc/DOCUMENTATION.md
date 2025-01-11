@@ -1,5 +1,7 @@
 # Documentation
 
+![landing page](./pictures/landingpage.png)
+
 This is a combination of a [Data Hub](https://github.com/datasnack/datahub) instance and a Chat-Bot powered by an LLM for interaction.
 
 The Data Hub is a geographic information system (GIS) featuring a data fusion engine designed for data harmonization, alongside an interactive dashboard for effective data exploration and collaboration. Its key objective is to merge data of multiple formats and sources across temporal and spatial axes, allowing users to combine, analyze, and interpret the data.
@@ -83,7 +85,39 @@ After the process is complete you can now use the AI Chat in the Datahub interfa
 
 ### Reaching the Interface
 
-The interface is avaliable under [this link](http://localhost:8000/ai-chat).
+The interface is avaliable under [AI Chat](http://localhost:8000/ai-chat).
+
+![landing page](./pictures/ai_chat.png)
+
+You can enter your prompt into the text box and send it to the AI and get information about the data.
+
+#### Verbose Mode
+
+Verbose Mode provides more detailed overview of what happens inside the AI after you send your request. Click on the check-box to enable this mode.
+
+#### Active Tables
+
+Currently, the AI depends on manually entered descriptions about the tables in the database. These are called active tables.
+
+![landing page](./pictures/data_desc.png)
+
+You can manage this by using this interface under [Data Description](http://localhost:8000/data-description/).
+
+#### Updating Table Descriptions
+
+You can either import prepared table descriptions or write them, better them yourself. To import and existing one click on [Choose File/Datei Auswählen]() and select the json-file:
+
+![import desc](./pictures/select%20import.png)
+
+After selecting the json-file, you will return to the page , now press on [Import Descriptions]()
+
+![import desc](./pictures/import_desc.png)
+
+This will load the descriptions into the database.
+
+After that your data descriptions should look something like this :
+
+![import desc](./pictures/active_tables.png)
 
 ### Implementing Local Changes and Adding other Extensions
 
