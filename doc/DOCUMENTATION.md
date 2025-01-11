@@ -1,10 +1,12 @@
 # Documentation
 
-![landing page](./pictures/landingpage.png)
+## ![landing page](./pictures/landingpage.png)\
 
 This is a combination of a [Data Hub](https://github.com/datasnack/datahub) instance and a Chat-Bot powered by an LLM for interaction.
 
 The Data Hub is a geographic information system (GIS) featuring a data fusion engine designed for data harmonization, alongside an interactive dashboard for effective data exploration and collaboration. Its key objective is to merge data of multiple formats and sources across temporal and spatial axes, allowing users to combine, analyze, and interpret the data.
+
+---
 
 ## Required Software
 
@@ -83,6 +85,8 @@ You need an active internet connection for the build.
 
 After the process is complete you can now use the AI Chat in the Datahub interface.
 
+---
+
 ### Reaching the Interface
 
 The interface is avaliable under [AI Chat](http://localhost:8000/ai-chat).
@@ -119,9 +123,23 @@ After that your data descriptions should look something like this :
 
 ![import desc](./pictures/active_tables.png)
 
+---
+
 ### Implementing Local Changes and Adding other Extensions
 
+TBD
+
 ## Architechture and Design
+
+We decided to seperate our components by responsibility, each component is simultaneosly their own docker container.
+
+Here, roles and responsibilities of each component:
+
+-   **Datahub Module:** Acts as the central service point for end users by prodiving a UI and offering an interaface to inspect the data manually.
+-   **mongo-db:** Contains the data about active tables and persists them locally
+-   **Post-GIS:** Database also used by Datahub to store the demographical and geographical data. Offers interface to Datahub and Datahub-AI
+-   **Ollama:** Hosts the LLM's (Large Language Models) and their embeddings.
+-   **Datahub-AI:** Main Component that is developed by us. Manages the AI and the active tables as well as offers a REST-like API to communicate with AI and handle the table descriptions.
 
 ![architechture picture](./pictures/uml.svg)
 
@@ -132,6 +150,8 @@ After that your data descriptions should look something like this :
 We wanted a model that is free, smart enough to sustain our requirements but small enough so that it could run on many devices.
 
 However, the performance of the model and interface cohesion varied drastically when we experimented with different models.
+
+In the end we decided to go for dolphin-llama3.
 
 ### Limitations
 
