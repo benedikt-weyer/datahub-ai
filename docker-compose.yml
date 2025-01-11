@@ -8,6 +8,8 @@ services:
     volumes:
       - ./data:/app/data/
       - ./src:/app/src/
+    depends_on:
+      - mongo
 
   postgis:
     image: postgis/postgis:16-3.4
@@ -47,8 +49,12 @@ services:
     #           count: all # alternatively, use `all` for all GPUs
     #           capabilities: [gpu]
 
-  llm-query-engine:
-    image: llm-query-engine:latest
+  datahub-ai:
+    build: 
+      dockerfile: ./llm-in-container/Dockerfile
+      context: .
+    
+    #image: llm-query-engine:latest
     restart: always
     ports:
       - "8001:8001"
@@ -56,6 +62,30 @@ services:
       - postgis
       - ollama
 
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: datahub_ai
+    ports:
+      - 27017:27017
+    volumes: 
+      - mongo:/data/db
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_BASICAUTH: false
+
 volumes:
   ollama:
   pgadmin-data:
+  mongo:
