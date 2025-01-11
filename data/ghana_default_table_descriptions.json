@@ -1,0 +1,152 @@
+{
+    "active_tables": [
+        {
+            "table_name": "datalayers_datalayer",
+            "table_description": "A description of all the tables in the database"
+        },
+        {
+            "table_name": "chirps_prcp",
+            "table_description": "Here you can find percipition Data from Ghana. Precipitation (satellite) | #weather #rainfall #satellite"
+        },
+        {
+            "table_name": "chirts_tmax",
+            "table_description": "Maximum temperature (satellite) | #temperature #weather #satellite #maximum"
+        },
+        {
+            "table_name": "copernicus_built",
+            "table_description": "Urban land cover | #landcover #built-up #urbanization"
+        },
+        {
+            "table_name": "copernicus_crop",
+            "table_description": "Cropland land cover | #landcover #proportion #cropland"
+        },
+        {
+            "table_name": "copernicus_forest",
+            "table_description": "Forest land cover | #landcover #forest"
+        },
+        {
+            "table_name": "copernicus_herbveg",
+            "table_description": "Herbaceous wetland land cover | #landcover #wetland"
+        },
+        {
+            "table_name": "copernicus_herbwet",
+            "table_description": "Permanent herbaceous wetland land cover | #landcover #wetland"
+        },
+        {
+            "table_name": "copernicus_moss",
+            "table_description": "Moss and litchen land cover | #landcover #litchen #moss"
+        },
+        {
+            "table_name": "copernicus_shrub",
+            "table_description": "Shrubland land cover | #landcover #shrubland"
+        },
+        {
+            "table_name": "copernicus_sparse",
+            "table_description": "Bare and sparse land cover | #landcover #bare #sparse"
+        },
+        {
+            "table_name": "copernicus_water",
+            "table_description": "Permanent water bodies land cover | #landcover #water bodies"
+        },
+        {
+            "table_name": "dhs_drinkwater",
+            "table_description": "Access to clean drinking water | #infrastructure #water and sanitation #drinking water dhs_drinkwater"
+        },
+        {
+            "table_name": "era5_t2m",
+            "table_description": "ERA5 Temperature 2m (test)"
+        },
+        {
+            "table_name": "healthsitesio_facilities",
+            "table_description": "Health facilities"
+        },
+        {
+            "table_name": "koeppen_af",
+            "table_description": "Tropical, rainforest climate coverage"
+        },
+        {
+            "table_name": "koeppen_am",
+            "table_description": "Tropical, monsoon climate coverage"
+        },
+        {
+            "table_name": "koeppen_aw",
+            "table_description": "Tropical, savannah climate coverage"
+        },
+        {
+            "table_name": "koeppen_bs",
+            "table_description": "Arid, steppe climate coverage"
+        },
+        {
+            "table_name": "koeppen_bw",
+            "table_description": "Arid, desert climate coverage"
+        },
+        {
+            "table_name": "koeppen_cf",
+            "table_description": "Temperate, no dry season climate coverage"
+        },
+        {
+            "table_name": "koeppen_cs",
+            "table_description": "Temperate, dry summer climate coverage"
+        },
+        {
+            "table_name": "koeppen_cw",
+            "table_description": "Temperate, dry winter climate coverage"
+        },
+        {
+            "table_name": "koeppen_df",
+            "table_description": "Cold, no dry season climate coverage"
+        },
+        {
+            "table_name": "koeppen_ds",
+            "table_description": "Cold, dry summer climate coverage"
+        },
+        {
+            "table_name": "koeppen_dw",
+            "table_description": "Cold, dry winter climate coverage"
+        },
+        {
+            "table_name": "koeppen_ef",
+            "table_description": "Polar, frost climate coverage"
+        },
+        {
+            "table_name": "koeppen_et",
+            "table_description": "Polar, tundra climate coverage"
+        },
+        {
+            "table_name": "malariaatlas_traveltimehc",
+            "table_description": "Travel time to nearest health facility (motorized)"
+        },
+        {
+            "table_name": "meteo_prcp",
+            "table_description": "Here you can find percipition Data from Ghana. Precipitation (station) | #weather #station #rainfall"
+        },
+        {
+            "table_name": "meteo_tavg",
+            "table_description": "Average temperature (station) | #temperature #weather #average #mean #station"
+        },
+        {
+            "table_name": "meteo_tmax",
+            "table_description": "Maximum temperature (station) | #temperature #station #maximum"
+        },
+        {
+            "table_name": "meteo_tmin",
+            "table_description": "Minimum temperature (station) | #temperature #weather #minimum"
+        },
+        {
+            "table_name": "shapes_shape",
+            "table_description": "Here you can find the regions in the data. Here you can find the districts in the data. Here you can find the countries in the data. Here you can find the area of a region/district in sqm.  A Shape is an geographic location/area. They are all found in this table. Geographic Data for Ghana is found here. This table can be used in an other join statement to resolve the shape_id. Countries, regions and Districts are found here."
+        },
+        {
+            "table_name": "worldpop_popc",
+            "table_description": "Here you can find the population of the regions/districts. Join this with shapes_shape on 'shapes_shape.id'. Population count"
+        },
+        {
+            "table_name": "worldpop_popd",
+            "table_description": "Population density"
+        },
+        {
+            "table_name": "shapes_type",
+            "table_description": "Here you can find theid of the shape types. Shape Types Are: regions, districts and country"
+        }
+    ]
+}
