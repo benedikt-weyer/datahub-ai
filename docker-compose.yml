@@ -61,6 +61,9 @@ services:
     depends_on:
       - postgis
       - ollama
+    # used when wanting to connect to (kubernetes) proxy running on local machine 
+    #extra_hosts:
+    #  - "host.docker.internal:host-gateway"
 
   mongo:
     image: mongo
