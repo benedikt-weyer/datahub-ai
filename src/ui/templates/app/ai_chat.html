@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+
+{% block head %}
+	<style>
+		body {
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+			background-color: #f9f9f9;
+		}
+		#chat-container {
+			height: 80vh;
+			overflow-y: auto;
+			padding: 10px;
+			display: flex;
+			flex-direction: column;
+		}
+		.message {
+			margin: 10px 0;
+			display: flex;
+			align-items: flex-start;
+		}
+		.user-message {
+			justify-content: flex-end;
+		}
+		.user-message p {
+			background-color: #dcf8c6;
+			color: #333;
+			border-radius: 10px;
+			padding: 10px;
+			max-width: 60%;
+			text-align: right;
+		}
+		.assistant-message p {
+			background-color: #f1f0f0;
+			color: #333;
+			border-radius: 10px;
+			padding: 10px;
+			max-width: 60%;
+		}
+		#input-container {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			display: flex;
+
+			padding: 10px;
+			background-color: white;
+			box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.1);
+			gap: 10px;
+			height: 70px;
+		}
+		input[type="text"] {
+			flex: 1;
+			padding: 10px;
+			border: 1px solid #ddd;
+			border-radius: 10px;
+		}
+		button {
+			margin-left: 10px;
+			padding: 10px 15px;
+			background-color: #007bff;
+			color: white;
+			border: none;
+			border-radius: 10px;
+			cursor: pointer;
+		}
+
+		#verbose-container{
+			background-color: #eee;
+			border-radius: 10px;
+			height: 100%;
+			display: flex;
+			align-items: center;
+			padding: 0px 10px;
+			gap: 5px;
+		}
+
+		.loader2 {
+			width: 48px;
+			height: 48px;
+			margin: 10px 50px;
+			border: 5px solid #007bff;
+			border-bottom-color: transparent;
+			border-radius: 50%;
+			display: inline-block;
+			box-sizing: border-box;
+			animation: rotation 1s linear infinite;
+			}
+
+			@keyframes rotation {
+			0% {
+				transform: rotate(0deg);
+			}
+			100% {
+				transform: rotate(360deg);
+			}
+		}
+
+
+		.loader {
+			width: 40px;
+			margin: 10px 50px;
+			display: inline-block;
+			box-sizing: border-box;
+			aspect-ratio: 1;
+			--_c:no-repeat radial-gradient(farthest-side,#007bff 92%,#0000);
+			background: 
+				var(--_c) top,
+				var(--_c) left,
+				var(--_c) right,
+				var(--_c) bottom;
+			background-size: 12px 12px;
+			animation: l7 1s infinite;
+		}
+		@keyframes l7 {to{transform: rotate(.5turn)}}
+	</style>
+{% endblock %}
+
+
+{% block content %}	
+	<div id="chat-container"></div>
+
+	<div id="input-container">
+		<!-- Verbose Mode Toggle -->
+		<div id="verbose-container">
+			<input type="checkbox" id="verbose-toggle" />
+			<label for="verbose-toggle">Verbose Mode</label>
+		</div>
+		<input
+			type="text"
+			id="user-input"
+			placeholder="Type your message here..."
+			onkeypress="handleEnter(event)"
+		/>
+		<button onclick="sendQueryToLLMDirectly()">Send</button>
+	</div>
+
+	<script>
+		async function sendQueryToLLMDirectly() {
+			const userInput = document.getElementById("user-input");
+			const query = userInput.value.trim();
+			const isVerbose = document.getElementById("verbose-toggle").checked;
+
+			if (!query) return;
+
+			// Add user's message to the chat container
+			addMessageToChat(query, "user-message");
+			
+			// add inital assistant message with loader
+			const loaderAssistantMessageDiv = addMessageToChat('<span class="loader2"></span>', "assistant-message");
+
+			userInput.value = ""; // Clear input box
+
+
+			// Send POST request
+			fetch("http://localhost:8001/api/query", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ 
+					query: query,
+					is_verbose: isVerbose
+				})
+			})
+			.then((response) => response.json())
+			.then((data) => {
+
+				// Remove loader
+				loaderAssistantMessageDiv.remove();
+
+				//Add verose output
+				if(data.verbose_output){
+					addMessageToChat(data.verbose_output, "assistant-message");
+					
+				}
+
+				// Add assistant's response
+				addMessageToChat(data.response, "assistant-message");
+			})
+			.catch((error) => {
+				// Remove loader
+				loaderAssistantMessageDiv.remove();
+				// conole log error
+				console.error("Error:", error);
+				// Add assistant's response
+				addMessageToChat("Error: Unable to fetch response.", "assistant-message");			
+			});
+
+		}
+
+		function addMessageToChat(text, className) {
+			const chatContainer = document.getElementById("chat-container");
+
+			// Create a message wrapper
+			const messageDiv = document.createElement("div");
+			messageDiv.className = `message ${className}`;
+
+			//format text
+			// Replace newline characters with <br> tags for line breaks
+			let formatedText = text.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
+			// Create the text bubble
+			const messageBubble = document.createElement("p");
+			messageBubble.innerHTML = formatedText;
+			console.log(formatedText);
+
+			// Append elements
+			messageDiv.appendChild(messageBubble);
+			chatContainer.appendChild(messageDiv);
+
+			// Scroll to the bottom
+			chatContainer.scrollTop = chatContainer.scrollHeight;
+
+			return messageDiv;
+		}
+
+		function handleEnter(event) {
+			if (event.key === "Enter") {
+				sendQueryToLLMDirectly();
+			}
+		}
+	</script>
+
+{% endblock %}

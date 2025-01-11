@@ -12,3 +12,5 @@ psycopg2-binary
 rich
 requests
 python-dotenv
+arize-phoenix
+llama-index-callbacks-arize-phoenix
