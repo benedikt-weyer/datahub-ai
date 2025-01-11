@@ -51,3 +51,19 @@ def remove_table(table_name):
     removed_table = data_description_access.remove_table(table_name)
 
     return removed_table
+
+
+
+def import_active_tables(file_data):
+    # import active tables
+    #imported_tables = data_description_access.import_active_tables(file_data)
+    imported_tables = file_data.get('active_tables')
+
+    # remove all old active tables
+    data_description_access.remove_all_tables()
+
+    # add new active tables
+    for table in imported_tables:
+        data_description_access.add_table(table['table_name'], table['table_description'])
+
+    return imported_tables

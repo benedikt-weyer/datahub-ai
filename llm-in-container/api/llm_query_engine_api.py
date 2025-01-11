@@ -109,6 +109,20 @@ def data_description_active_tables_delete():
     })
 
 
+@app.route('/api/data-description/active-tables/import', methods=['POST'])
+def data_description_active_tables_import():
+    data = request.json
+    file_data = data.get("file_data")
+    
+    if not file_data:
+        return jsonify({"error": "Missing 'file_data' parameter"}), 400
+    
+    response = data_description_logic.import_active_tables(file_data)
+    return jsonify({
+        "response": response,
+    })
+
+
 
 
 def parse_json(data):
