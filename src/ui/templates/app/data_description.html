@@ -72,7 +72,7 @@
         <h2>Import/Export Descriptions</h2>
 
         <div style="display: flex; gap: 10px; justify-content: space-between;">
-            <form action="/data-description"method="POST" enctype="multipart/form-data" style="display: flex; align-items: center; gap: 15px; background-color: #eee; border-radius: 10px; padding: 10px 20px;">
+            <form action="/data-description/" method="POST" enctype="multipart/form-data" style="display: flex; align-items: center; gap: 15px; background-color: #eee; border-radius: 10px; padding: 10px 20px;">
                 {% csrf_token %}
                 <input type="hidden" name="form_type" value="import_descriptions">
                 <input type="file" name="file" accept=".json">
