@@ -25,14 +25,20 @@ def test_questions(llm_test, questions, expected_answers):
 
             
 
-            url = 'http://localhost:8001/query'
+            url = 'http://localhost:8001/api/query'
             payload = { 'query': questions[i] }
             headers = {"Content-Type": "application/json; charset=utf-8"}
 
-            response = requests.post(url, json = payload, headers=headers)
-            print(str(response))
-
-            answer = response.json()['response']
+            try:
+                response = requests.post(url, json=payload, headers=headers)
+                response.raise_for_status()  # Raise an HTTPError for bad responses (4xx and 5xx)
+                answer = response.json().get('response', 'No response field in JSON')
+            except requests.exceptions.RequestException as e:
+                print(f"Request failed: {e}")
+                answer = 'Error: Request failed'
+            except ValueError:
+                print("Error: Unable to parse JSON response")
+                answer = 'Error: Invalid JSON response'
 
             print(answer)
             #answer = "Donald Trump ist the next President of the United States of America." #submit_query(input[i])
