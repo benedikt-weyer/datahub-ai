@@ -2,7 +2,16 @@
 from llama_index.llms.ollama import Ollama
 import re
 import requests
+import json
 
+def read_test_data_from_json(path):
+    with open(path, 'r') as file:
+        data = json.load(file)
+    
+    questions = [item['question'] for item in data['test_data'] if item['id'] != -1] 
+    expected_answers = [item['expected_answer'] for item in data['test_data'] if item['id'] != -1] 
+    
+    return questions, expected_answers
 
 def read_file(path):
     with open(path, 'r') as file:
@@ -13,6 +22,7 @@ def test_questions(llm_test, questions, expected_answers):
     n_tests = 3
     ratings = [0] * n_tests
     abs_ratings = [0] * len(questions)
+    ratings_for_milestone_4 = [0] * n_tests * len(questions)
 
     print("testing " + str(len(questions)) + " questions with " + str(n_tests) + " runs per question...")
 
@@ -26,6 +36,7 @@ def test_questions(llm_test, questions, expected_answers):
             
 
             url = 'http://localhost:8001/api/query'
+            #url = 'http://localhost:8000/ai-chat'
             payload = { 'query': questions[i] }
             headers = {"Content-Type": "application/json; charset=utf-8"}
 
@@ -41,11 +52,6 @@ def test_questions(llm_test, questions, expected_answers):
                 answer = 'Error: Invalid JSON response'
 
             print(answer)
-            #answer = "Donald Trump ist the next President of the United States of America." #submit_query(input[i])
-            #print("question: " + questions[i])
-            #print("expected answers: " + expected_answers[i] + "\n")
-            #print("answer: " + answer + "\n")
-            #prompt: compare output with expected_output
 
             prompt = f"""
                         Compare the following answer with the expected answer to the question: "{questions[i]}"
@@ -55,21 +61,21 @@ def test_questions(llm_test, questions, expected_answers):
 
                         Rating Scale:
                         1: Completely unrelated or irrelevant answer
-                        2-3: Mostly irrelevant with minimal correct elements
-                        4-5: Partially relevant, but with significant deficiencies
-                        6-7: Predominantly relevant and correct, but with some gaps
-                        8-9: Very good, with minor room for improvement
-                        10: Perfect match in all criteria
+                        2-15: Mostly irrelevant with minimal correct elements
+                        16-50: Partially relevant, but with significant deficiencies
+                        60-70: Predominantly relevant and correct, but with some gaps
+                        80-90: Very good, with minor room for improvement
+                        100: Perfect match in all criteria
 
                         IMPORTANT: If the answer has no discernible connection to the question or expected answer, it MUST be rated 1.
 
                         Evaluation Process:
                         Stage 1: Relevance Check
                         - Is the answer fundamentally relevant to the question?
-                        - If not, rate it immediately as 1/10 and end the evaluation.
+                        - If not, rate it immediately as 1/100 and end the evaluation.
 
                         Stage 2: Detailed Evaluation (only if Stage 1 is passed)
-                        - Now evaluate based on the following extended criteria on a scale of 2-10:
+                        - Now evaluate based on the following extended criteria on a scale of 20-100:
                         1. Content Accuracy
                             - Includes correct information about data availability
                         2. Completeness of Information
@@ -98,7 +104,7 @@ def test_questions(llm_test, questions, expected_answers):
                         2. Provide all available relevant information
                         3. Are constructive and offer alternatives or solutions where possible
 
-                        Example of a 9/10 rating:
+                        Example of a 90/100 rating:
                         Question: "Are precipitation data for Ghana available from 2020 to 2023?"
                         Answer: "Precipitation data for Ghana is available in the data hub, but only for the period from January 2021 to December 2023 in daily resolution. Unfortunately, data for the year 2020 is missing. We offer two data sources: satellite measurements (chirps_prcp) and station measurements (meteo_prcp). For analyses including 2020, we recommend consulting external data sources such as the Ghana Meteorological Agency."
 
@@ -108,10 +114,10 @@ def test_questions(llm_test, questions, expected_answers):
                         - Mention of available data sources
                         - Constructive suggestion for missing data
 
-                        For ratings of 1-3, ALWAYS provide a detailed explanation of why the answer was classified as unrelated or highly irrelevant.
+                        For ratings of 10-30, ALWAYS provide a detailed explanation of why the answer was classified as unrelated or highly irrelevant.
 
                         Respond in the following format:
-                        Rating: [1-10] / 10
+                        Rating: [1-100] / 100
                         Justification: [Your detailed explanation]]
                     """
 
@@ -119,20 +125,29 @@ def test_questions(llm_test, questions, expected_answers):
             result = llm_test.complete(prompt)
             rating = re.search(r'Rating:\s*(\d+)', result.text)
             ratings[j] = int(rating.group(1))
+            ratings_for_milestone_4[i*n_tests+j] = int(rating.group(1))
 
         abs_rating = sum(ratings) / len(ratings)
         abs_ratings[i] = round(abs_rating,2)
 
     print("testing complete!")
-    return abs_ratings
+    #return abs_ratings
+    return ratings_for_milestone_4
 
 def print_result(ratings):
     print("ratings: " + str(ratings))
     print("average rating: " + str(round(sum(ratings)/len(ratings),2)))
 
-#read questions and answers 
-questions = read_file("./evaluate-ai/questions.txt")
-expected_answers = read_file("./evaluate-ai/expected_answers.txt")
+def save_result(ratings, filename='ratings.md'):
+    with open(filename, 'w') as md_file:
+        for index, rating in enumerate(ratings, start=0):
+            md_file.write(f'question-id: {index}, rating: {rating:.2f}\n')
+
+
+#read questions and answers
+#questions = read_file("./evaluate-ai/questions.txt")
+#expected_answers = read_file("./evaluate-ai/expected_answers.txt")
+questions, expected_answers = read_test_data_from_json("./evaluate-ai/test_data.json")
 
 # create llm
 llm_test = Ollama(base_url='http://openmain.de:11434', model="dolphin-mistral:latest", request_timeout=30.0)
@@ -141,4 +156,4 @@ llm_test = Ollama(base_url='http://openmain.de:11434', model="dolphin-mistral:la
 # check testcases with llm
 ratings = test_questions(llm_test=llm_test, questions=questions, expected_answers=expected_answers)
 print_result(ratings=ratings)
-
+save_result(ratings=ratings)

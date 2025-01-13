@@ -1,0 +1,154 @@
+{
+    "test_data": [
+        {
+            "id": 0,
+            "category": "data_available_easy",
+            "question": "How big is Ghana?",
+            "expected_answer": "Ghana has an area of approx. 239,567 square kilometres"
+        },
+        {
+            "id": 1,
+            "category": "data_available_easy",
+            "question": "How many people live in Ghana?",
+            "expected_answer": "In Ghana live 34,4 million people"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which ocean does Ghana’s coastline border?",
+            "expected_answer": "Ghana boarders the Atlantic Ocean"
+        },
+        {
+            "id": 3,
+            "category": "data_available_easy",
+            "question": "How many regions does Ghana have?",
+            "expected_answer": "Ghana has 16 regions"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which region is the capital city, Accra, located in?",
+            "expected_answer": "The capital city of Ghana, Accra, is located in the Greater Accra Region"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "How many districts Ghana have?",
+            "expected_answer": "Ghana has 261 districts"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which region is the biggest in Ghana?",
+            "expected_answer": "The biggest region in Ghana ist the Northern Region"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "What is the name of the largest lake in Ghana?",
+            "expected_answer": "The largest lake in Ghana ist the Lake Volta"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which part of Ghana is more rural: the north or the south?",
+            "expected_answer": "The north part of Ghana is more rural than the south part"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which season in Ghana has the most rain?",
+            "expected_answer": "The wet season in Ghana has the most rain"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which region of Ghana is the driest?",
+            "expected_answer": "The Upper East Region is the driest region in Ghana"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which region of Ghana has the largest population?",
+            "expected_answer": "The Ashanti Region has the largest population in Ghana with approx. 5,456,000 people "
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which river is the largest in Ghana?",
+            "expected_answer": "The largest river in Ghana is the Volta River"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which part of Ghana experiences the most rainfall?",
+            "expected_answer": "The south part of Ghana experiences the most rainfall"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "In which months is the rainy season most active in Ghana?",
+            "expected_answer": "The rainy season in Ghana is most active between April and October"
+        },
+        {
+            "id": -1,
+            "category": "data_available_easy",
+            "question": "Which mountain in Ghana is the highest, and in which region is it located? ",
+            "expected_answer": "The Mount Afadja is the highest mountain in Ghana and it is located in Akwapim-Togo Ranges"
+        },
+        {
+            "id": 30,
+            "category": "data_available_hard",
+            "question": "I need a quick overview of the Agona West Municipal district, Ghana. How big is the area of this district and how was the tropical rainforest climate coverage between 1990-2000?",
+            "expected_answer": "The Agona West Municipal district is approx. 356,41 square kilometres big. You can find this data in shapes_shape. The tropical rainforest climate coverage is given in the dataset koeppen_af. The coverage is 0 % and the data is available on a yearly resolution."
+        },
+        {
+            "id": 31,
+            "category": "data_available_hard",
+            "question": "I need a quick overview of the Ahafo region, Ghana. How many districts are located in this region and how was the tropical savannah climate coverage of the district with the largest area?",
+            "expected_answer": "The Ahafo region has 6 different regions, where Asunafo North Municipal is the largest district. The area is approx. 1,410.42 square kilometres. You can find this data in shapes_shape. The tropical savannah climate coverage is at 100 % and available from 1901-2020 on a yearly resolution. You can find the data in the dataset koeppen_aw."
+        },
+        {
+            "id": 32,
+            "category": "data_available_hard",
+            "question": "I need a quick overview of the Ada East district, Ghana. How large is this district, how many people live there, and what is the most recent urbanization rate?",
+            "expected_answer": "Here is an overview of the latest data points for the Ada East district in the Greater Accra region, Ghana: Area = 289.89 km² (as of 2021); Population: 92,943.0 (as of 2020); Urbanization rate: 4.46% (2019). Here is the link to view all available data for the Ada East district, in case you're interested in another data layer."
+        },
+        {
+            "id": 33,
+            "category": "data_not_available",
+            "question": "I need the location of all schools in Kumasi district, Ghana. Is this dataset available?",
+            "expected_answer": "Unfortunately, I cannot find this dataset. Here is the link to view all available data for the Kumasi Metropolitan District, in case you're interested in another data layer."
+        },
+        {
+            "id": 34,
+            "category": "data_not_available",
+            "question": "I need the neighboring countries of Ghana. Is this dataset available?",
+            "expected_answer": "Unfortunately, I cannot find this dataset. Here is the link to view all available data for Ghana, in case you're interested in another data layer."
+        },
+        {
+            "id": 35,
+            "category": "data_not_available",
+            "question": "Who was the president of Ghana in 2020?",
+            "expected_answer": "Unfortunately, I cannot find this dataset. Here is the link to view all available data for Ghana, in case you're interested in another data layer."
+        },
+        {
+            "id": 36,
+            "category": "data_partially_available",
+            "question": "For my research project on malaria, I need precipitation data for the period from January 2020 to December 2023. Are these data available, and in what resolution?",
+            "expected_answer": "Thank you for your question. Yes, I have found precipitation data for Ghana. However, the data is only available for the period January 2021 to December 2023 in daily resolution. I can offer you two different data sources: Precipitation (satellite) (chirps_prcp) and Precipitation (station) (meteo_prcp)."
+        },
+        {
+            "id": 37,
+            "category": "data_partially_available",
+            "question": "I need the maximum temperatures from the Ada East District from 1950-2015. Is this dataset available?",
+            "expected_answer": "the data is only available for the period January 1983 to December 2016 in daily resolution. You can find the data in chirts_tmax"
+        },
+        {
+            "id": 38,
+            "category": "data_partially_available",
+            "question": "I need the rainfall climate coverage from 1980-2022 for the Ahafo Ano North district. Is this dataset available?",
+            "expected_answer": "the data is only available for the period 1901 to 2020 in yearly resolution. You can find the data in koeppen_af"
+        }
+    ]
+}
