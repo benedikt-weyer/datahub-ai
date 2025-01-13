@@ -154,10 +154,14 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         "Be careful to not query for columns that do not exist. "
         "Pay attention to which column is in which table. "
         "Also, qualify column names with the table name when needed. "
-        "'id' is not short for 'index'"
-        "When asked for a shape/shapes, make the sql query return the name of the shape/shapes"
+        "'id' is not short for 'index' "
+        "When asked for a shape/shapes, make the sql query return the name of the shape/shapes "
 
-        "Provide an valid Postgres SQL statement."
+        "Provide an valid Postgres SQL statement. "
+        "When you want to filter for Countries or Regions or Districts, use shapes_shape and shapes_type and join them on shape_id=id. "
+        #"Countries and Regions and Districts are writen in upercase when used in the query. "
+        "Do not use name = 'District' in this table or similar!! "
+        "All the data is refering to Ghana, so do not use 'Ghana' in the query. "
         #"Do NOT use aliases (like AS)."
 
         "You are required to use the following format, each taking one line:\n\n"
