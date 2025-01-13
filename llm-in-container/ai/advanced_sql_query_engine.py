@@ -28,7 +28,7 @@ from llama_index.core.query_pipeline import (
 from llama_index.core.prompts.prompt_type import PromptType
 from llama_index.core.llms import ChatResponse
 
-from logic import data_description_logic
+from logic import data_description_logic, datahub_metadata_logic
 
 
 import phoenix as px
@@ -92,7 +92,7 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
 
     # get table infos / table descriptions + active tables
-    table_infos = data_description_logic.get_active_tables()
+    table_infos = datahub_metadata_logic.get_active_tables()
     print(table_infos, flush=True)
 
     formated_table_infos = '\n'.join(str(table.get('table_name') + ': ' + table.get('table_description')) for table in table_infos)
@@ -115,6 +115,8 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
                 table_info += table_opt_context
 
             context_strs.append(table_info)
+            
+            datahub_table_infos = dml.get_datahub_tables_metadata()
 ### concat the result from datahub request to the string
         formated_selected_table_infos = '\n'.join(context_strs)
         verbose_output_submit_query += f"<b>Selected tables and their description:</b>\n {formated_selected_table_infos}\n\n"
