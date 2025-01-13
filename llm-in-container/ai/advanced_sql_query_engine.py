@@ -115,7 +115,7 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
                 table_info += table_opt_context
 
             context_strs.append(table_info)
-
+### concat the result from datahub request to the string
         formated_selected_table_infos = '\n'.join(context_strs)
         verbose_output_submit_query += f"<b>Selected tables and their description:</b>\n {formated_selected_table_infos}\n\n"
 
