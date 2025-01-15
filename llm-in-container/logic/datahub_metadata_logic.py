@@ -13,8 +13,10 @@ def get_datahub_tables_metadata():
     
     datahub_data = dta.get_datahub_tables()
     
-    table_data_in_string_format = list(str)
-    print(datahub_data[2])
+    table_data_in_string_format = list()
+    
+    for table in sorted(datahub_data, key=lambda table: table["id"]):
+        print(table)
     
     return
 

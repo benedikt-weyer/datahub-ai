@@ -38,5 +38,7 @@ def get_datahub_tables():
                 data[col] = row[col]
         
         final_data[i] = data
+        
+        #print(data)
     return final_data
 ## new func to pull data from datahub for datalayers
