@@ -28,7 +28,7 @@ from llama_index.core.query_pipeline import (
 from llama_index.core.prompts.prompt_type import PromptType
 from llama_index.core.llms import ChatResponse
 
-from logic import data_description_logic, datahub_metadata_logic
+from logic import datahub_metadata_logic as dml
 
 
 import phoenix as px
@@ -92,13 +92,11 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
 
     # get table infos / table descriptions + active tables
-    table_infos = datahub_metadata_logic.get_active_tables()
+    table_infos = dml.get_active_tables()
     print(table_infos, flush=True)
 
     formated_table_infos = '\n'.join(str(table.get('table_name') + ': ' + table.get('table_description')) for table in table_infos)
     verbose_output_submit_query += f"<b>Available tables and their description:</b>\n {formated_table_infos}\n\n"
-
-
 
     def get_table_context_str(table_schema_objs: List[SQLTableSchema]):
         global verbose_output_submit_query 
@@ -308,3 +306,5 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         return {
             "response": str(response.message.content)
         }
+
+submit_query("What years are covered in the data",True)

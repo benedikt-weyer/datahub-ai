@@ -32,7 +32,7 @@ def get_datahub_tables():
         final_data.append(dict())
         data = {}
         for col in columns_to_keep:
-            if row[col] == '' or []:
+            if row[col] == '':
                 data[col] =  'not available'
             else:
                 data[col] = row[col]
