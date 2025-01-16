@@ -166,13 +166,13 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
         "You are required to use the following format, each taking one line:\n\n"
         "Question: Question here\n"
-        "SQLQuery: SQL Query to run\n\n"
-        #"SQLResult: Result of the SQLQuery\n"
-        #"Answer: Final answer here\n\n"
+        "SQLQuery: SQL Query to run\n"
+        "SQLResult: Result of the SQLQuery\n"
+        "Answer: Final answer here\n\n"
         "Only use tables listed below.\n"
         "{schema}\n\n"
         "Question: {query_str}\n"
-        #"SQLQuery: "
+        "SQLQuery: "
     )
 
     MODIFIED_TEXT_TO_SQL_PROMPT = PromptTemplate(
@@ -294,6 +294,7 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         #query="For my research project on malaria, I need precipitation data for the period from January 2020 to December 2023. Are these data available, and in what resolution?"
         #query="What regions are found in the data?"
     )
+    print(str(response))
 
     
 
