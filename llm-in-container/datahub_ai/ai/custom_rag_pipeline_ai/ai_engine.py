@@ -4,13 +4,8 @@ import os
 from llama_index.llms.ollama import Ollama
 from llama_index.core.chat_engine import SimpleChatEngine
 from llama_index.embeddings.ollama import OllamaEmbedding
-from llama_index.core.prompts.prompt_type import PromptType
-from llama_index.core import (
-    SQLDatabase,
-    VectorStoreIndex,
-    PromptTemplate,
-    set_global_handler
-)
+from llama_index.core import PromptTemplate
+
 
 from datahub_ai.logic import data_description_logic
 from datahub_ai.ai.custom_rag_pipeline_ai import table_selector
@@ -29,22 +24,24 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     print(ollama_api_url)
 
     # set the models to use
-    llm_name_table_selector = "gemma2:9b"
-    embedding_name_standard_embedding = "mxbai-embed-large:latest"
+    llm_gemma2 = Ollama(base_url=ollama_api_url, model='gemma2:9b', request_timeout=30.0)
+    embedding_mxbai= OllamaEmbedding(base_url=ollama_api_url, model_name='mxbai-embed-large:latest', request_timeout=30.0)
 
     # init models
-    llm_table_selector = Ollama(base_url=ollama_api_url, model=llm_name_table_selector, request_timeout=30.0)
-    embedding_standard_embedding = OllamaEmbedding(model_name=embedding_name_standard_embedding, base_url=ollama_api_url)
+    embedding_standard_embedding = embedding_mxbai
+    llm_table_selector = llm_gemma2
+    llm_response_synthesis = llm_gemma2
+    
 
     # init chat engine
-    chat_engine = SimpleChatEngine.from_defaults(llm=llm_table_selector, embedding=embedding_standard_embedding, chat_history=chat_history)
+    chat_engine = SimpleChatEngine.from_defaults(llm=llm_response_synthesis, embedding=embedding_standard_embedding, chat_history=chat_history)
     
 
     # get table infos
     table_infos = data_description_logic.get_active_tables(without_docker)
 
     # get relevant tables
-    relevant_tables = table_selector.select_important_tables(query_string, table_infos, llm_table_selector)
+    relevant_tables = table_selector.select_important_tables(query_string, table_infos, llm_table_selector)['relavant_tables']
 
 
     RESPONSE_TMPL = (
