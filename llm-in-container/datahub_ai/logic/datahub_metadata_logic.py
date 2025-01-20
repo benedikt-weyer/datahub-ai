@@ -16,9 +16,7 @@ def get_datahub_tables_metadata(without_docker_flag=False):
     pp(datahub_data)
     table_data_in_string_format = list()
     # Dictionary format key : table name value : description
-    # id s raus
-    # name raus aus description
-    
+    # id s raus name raus aus description
     
     for table in sorted(datahub_data, key=lambda table: table["id"]):
         if table["description"].find("you can find follow up") != -1:
