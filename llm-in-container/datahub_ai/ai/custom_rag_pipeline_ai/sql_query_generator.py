@@ -33,7 +33,7 @@ def generate_sql_query(question_string, relavent_table_info, sql_query_generatio
         "Table Info: {table_info}\n"
         "\n\n"
 
-        "You are required to use the following format, each taking one line:\n"
+        "Format your response as stated below, each taking one line: \n"
         "SQL_Query: SQL Query to run\n"
     )
     
