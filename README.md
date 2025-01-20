@@ -1,67 +1,30 @@
-# DataHub ChatBot LLM
+### Zielsetzung
 
-This is a combination of a [Data Hub](https://github.com/datasnack/datahub) instance and a Chat-Bot powered by an LLM for interaction.
+Unser Ziel ist mithilfe des Einsatzes von LLM's die Datenbereitstellung im Bereich Public Health zu verbessern. Dabei möchten wir anhand der verfügbaren Daten wie bei DataHub einen ChatBot zu erstellen, welche die Exploration und Abfragen deiser Daten vereinfacht. Durch die Anwendung von LLM's, nämlich KI, ermöglichen wir nicht-technischen Fachleuten, wie Akteure aus der Forschung oder engagierte Menschen aus dem öffentlichen Gesundheitswesen und weiteren Bereichen, die Exploration der vorhandenen Daten durch natürliche Sprache!
 
-The Data Hub is a geographic information system (GIS) featuring a data fusion engine designed for data harmonization, alongside an interactive dashboard for effective data exploration and collaboration. Its key objective is to merge data of multiple formats and sources across temporal and spatial axes, allowing users to combine, analyze, and interpret the data.
+### Teammitglieder und Rollen
 
+Unser Team besteht aus 4 Personen aus 3 Disziplinen:
 
-## Installation
+-   Benedikt Weyer, Angewandte Informatik, verantwortlich für die Software Entwicklung und Architektur
+-   Michael German, Informatik Technischer Systeme, verantwortlich für die Software Entwicklung
+-   Jan Biedasiek, Informatik Technischer Systeme, verantwortlich für die Testing unser System
+-   Yunus Sözeri, Wirtschaftsinformatik, verantwortlich für die für die Benutzeroberfläche und Dokumentation
 
-We can clone the Ghana Hub instance (this repository) into a new folder:
+### Design
 
-- Clone the repository `$ git clone https://github.com/datasnack/datahub.git`
-- Copy the `.env.example` to `.env`: `$ cp .env.example .env`
-- Open the `.env` file and make sure the following variables are set `SECRET_KEY`, `DATAHUB_NAME` (instructions are inside the `.env` file)
-- Run `$ docker compose up -d`
-- Wait/check until [http://localhost:8000/](http://localhost:8000/) shows the Data Hub interface
+Wir haben für eine Container-basierte Design entschieden.
 
-After this you can start/stop the system with:
+### Datenakquisition
 
-    $ docker compose start
-    $ docker compose stop
+Unser Daten kommen aus Datahub-Datasnack. Datahub wird als Open-Source-Anwendung zur Verfügung gestellt. Wir haben uns aus dem Datenkatalog auf die Ghana-Daten konzentriert. Einmal installiert kann die Daten auf dem lokalen Infrastruktur immer zum Service bereitgestellt werden.
 
-If you change the `.env` file run the following command to apply the changes:
+### Installationsanleitung
 
-    $ docker compose up -d
+Für die Installationsanleitung, können wir ganz stolz auf unser [Dokumentation](https://github.com/benedikt-weyer/datahub-ai/wiki/Documentation) verweisen.
 
-Now either import an existing data dump, or create a new instance.
+### Auswertung
 
-### Ollama Setup
+### Bekannte Fehler
 
-To download the required model run: `$ docker compose exec ollama ollama pull dolphin-llama3:latest`
-
-### Import Data
-
-We provide ready-to-use database export for Ghana that you can use to directly see and use the system without the need to download and process the raw data on your local machine.
-
-Go to the [releases](https://github.com/datasnack/dh-ghana/releases) page and download the latest `*.dump` file and place it in the `./data/` folder.
-
-Run the following command from the root of the repository:
-
-    $ docker compose exec datahub python manage.py restore ./data/<downloaded *.dump file>
-
-
-### Create Super-User
-
-Run the following command to create a new user with which you can log in into the backend ([http://localhost:8000/admin](http://localhost:8000/)):
-
-    $ docker compose exec datahub python manage.py createsuperuser
-
-
-### Create dump
-
-In case you need to export the data use: `$ docker compose exec datahub python manage.py dump`. An export file will be created in the `./data/` directory.
-
-
-## Customization
-
-Create custom app to add new functionality and/or overload templates (i.e., start page).
-
-    mkdir ./src/<name>
-    docker compose exec datahub python manage.py startapp <name> ./src/<name>
-
-Then add it in the `.env` to the key `INSTALLED_USER_APPS` (comma separated list) like `src.<name>`.
-
-Finally, inside the created app in `src/<name>/apps.py` change `name = <name>` to `name = src.<name>`.
-
-After that you need to rebuild/start the container with `docker compose up -d`.
+### Erweiterung und Ausblick
