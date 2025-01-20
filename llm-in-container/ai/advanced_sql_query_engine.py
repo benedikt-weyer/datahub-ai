@@ -307,3 +307,6 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         return {
             "response": str(response.message.content)
         }
+    
+def add_one_to_nr(number) -> int:
+    return number+1
