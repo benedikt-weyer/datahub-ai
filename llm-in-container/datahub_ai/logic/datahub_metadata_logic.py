@@ -15,6 +15,10 @@ def get_datahub_tables_metadata(without_docker_flag=False):
     
     pp(datahub_data)
     table_data_in_string_format = list()
+    # Dictionary format key : table name value : description
+    # id s raus
+    # name raus aus description
+    
     
     for table in sorted(datahub_data, key=lambda table: table["id"]):
         if table["description"].find("you can find follow up") != -1:
@@ -25,7 +29,7 @@ def get_datahub_tables_metadata(without_docker_flag=False):
             related = f" and it is related to following tables '{table['related_to']}'."
         
         description = (
-        f"The table '{table['key']}' with the id {table['id']} belongs to the category '{table['category_name']}' and the category key is '{table['category_key']}'. "
+        f"The table with the id {table['id']} belongs to the category '{table['category_name']}' and the category key is '{table['category_key']}'. "
         f"The contained information describes '{table['name']}', {related}. "
         f"The information this table provides is {table['description']}, measured in '{table['database_unit']}', "
         f"and the data coverage is {table['temporal_coverage']}."
