@@ -90,7 +90,7 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
     #create sql retriever
     sql_retriever = SQLRetriever(sql_database)
 
-
+   # datahub_table_infos = dml.get_datahub_tables_metadata()
     # get table infos / table descriptions + active tables
     table_infos = dml.get_active_tables()
     print(table_infos, flush=True)
@@ -114,7 +114,7 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
             context_strs.append(table_info)
             
-            datahub_table_infos = dml.get_datahub_tables_metadata()
+           
 ### concat the result from datahub request to the string
         formated_selected_table_infos = '\n'.join(context_strs)
         verbose_output_submit_query += f"<b>Selected tables and their description:</b>\n {formated_selected_table_infos}\n\n"

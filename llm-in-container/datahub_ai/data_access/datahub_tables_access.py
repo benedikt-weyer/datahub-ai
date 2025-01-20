@@ -10,10 +10,16 @@ import pprint as pp
 
 def get_table_names(without_docker = False):
     
-    database_url = f'postgresql://didex:didex@postgis:5432/didex'
+    if without_docker:
+        #create database engine without docker url
+        database_url = f'postgresql://didex:didex@localhost:5432/didex'
+        engine = create_engine(database_url)
+        
+    else:
+        #create database engine with docker url
+        database_url = f'postgresql://didex:didex@postgis:5432/didex'
+        engine = create_engine(database_url) 
     
-    #create database engine
-    engine = create_engine(database_url)
     
     # Get the inspector
     inspector = inspect(engine)
@@ -74,7 +80,6 @@ def get_datahub_table_metadata(without_docker = False):
     data = []
     for row in session.execute(query):
         data.append(row)
-    pp.pprint(data)
     
     final_data = []
     
@@ -86,9 +91,5 @@ def get_datahub_table_metadata(without_docker = False):
             data[col] = row[i]
         
         final_data.append(data)
-        
-    pp.pprint(final_data)
     
-    return
-
-get_datahub_table_metadata(without_docker=True)
+    return final_data
