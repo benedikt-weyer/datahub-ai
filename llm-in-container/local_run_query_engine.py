@@ -13,4 +13,5 @@ print(output['response'])
 print("-------------------")
 
 output = ai_engine.submit_query("How are you today?", is_verbose=True, without_docker=True)
+print("Answer:")
 print(output['response'])

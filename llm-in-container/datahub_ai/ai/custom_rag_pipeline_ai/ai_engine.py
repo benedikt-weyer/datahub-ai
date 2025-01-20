@@ -13,6 +13,8 @@ from datahub_ai.ai.custom_rag_pipeline_ai import table_selector
 
 def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_history=None):
 
+    print(f'Question: {query_string}')
+
     # Load the .env file
     dotenv.load_dotenv()
 
@@ -30,34 +32,41 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     # init models
     embedding_standard_embedding = embedding_mxbai
     llm_table_selector = llm_gemma2
-    llm_response_synthesis = llm_gemma2
+    llm_chat_assistent = llm_gemma2
     
 
     # init chat engine
-    chat_engine = SimpleChatEngine.from_defaults(llm=llm_response_synthesis, embedding=embedding_standard_embedding, chat_history=chat_history)
+    chat_assistant_engine = SimpleChatEngine.from_defaults(llm=llm_chat_assistent, embedding=embedding_standard_embedding, chat_history=chat_history)
     
 
     # get table infos
     table_infos = data_description_logic.get_active_tables(without_docker)
 
     # get relevant tables
-    relevant_tables = table_selector.select_important_tables(query_string, table_infos, llm_table_selector)['relavant_tables']
+    table_selector_response = table_selector.select_important_tables(query_string, table_infos, llm_table_selector)
+    relevant_tables = table_selector_response['relavant_tables']
+    is_sql_query_necessary = table_selector_response['is_sql_query_necessary']
+
+    if is_sql_query_necessary:
+        response = chat_assistant_engine.chat(query_string)
+    else:
+        response = 'Test response'
 
 
-    RESPONSE_TMPL = (
-        "Repeat back the question in a more structured way, to the user and state the tables that are relevant to the question \n"
-        "Question: {query_string}\n"
-        "Relevant Tables: {relevant_tables}\n"
-    )
-    RESPONSE_PROMPT = PromptTemplate(RESPONSE_TMPL)
-    response_prompt_string = RESPONSE_PROMPT.format(query_string=query_string, relevant_tables=relevant_tables)
+    # RESPONSE_TMPL = (
+    #     "Repeat back the question in a more structured way, to the user and state the tables that are relevant to the question \n"
+    #     "Question: {query_string}\n"
+    #     "Relevant Tables: {relevant_tables}\n"
+    # )
+    # RESPONSE_PROMPT = PromptTemplate(RESPONSE_TMPL)
+    # response_prompt_string = RESPONSE_PROMPT.format(query_string=query_string, relevant_tables=relevant_tables)
 
 
-    response = chat_engine.chat(response_prompt_string)
+    # response = chat_engine.chat(response_prompt_string)
     
 
 
     return {
         "response": response,
-        "chat_history": chat_engine.chat_history,
+        "chat_history": chat_assistant_engine.chat_history,
     }
