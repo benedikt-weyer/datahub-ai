@@ -13,7 +13,10 @@ Unser Team besteht aus 4 Personen aus 3 Disziplinen:
 
 ### Design
 
-Wir haben für eine Container-basierte Design entschieden.
+Unser Hauptvorteil ist, dass die Benutzeroberfläche mit Datahub-Interface integriert ist, weil uns Benutzerfreundlichkeit im Herzen liegt. Außedem die Design ist sehr intuitiv und gut dokumentiert, damit auch Leute mit wenigen technischen Verständnis das Projekt auch installieren können.
+
+Hinter den Kullisen sieht es anders aus.Wir haben für eine Container-basierte Software-Design entschieden. Die Verantwortlichkeiten werden durch Containern getrennt und mithilfe Schnittstellen verbunden. Das bietet uns eine sinvolle und intuitive Abstraktion, was auch die Entwicklung neuer Features oder die Verbesserung existierende Features vereinfacht.
+Haupteingangspunkt ist die in Datahub eingebettete Benutzeroberfläche. Daraus werden Anfragen an das Programm weitergeleitet und die anderen werden Container kommen dann zum Einsatz. Beispielsweise werden die Daten der eigenen Container gehostet und die Schnitstelle wird zur unser KI-Programm freigestellt, womit die KI die gegebene Anfrage bewerten kann und dementsprechend auf die nötigen Daten zugreifen kann und wenn nötig sogar Aggregationen bzw. mathematische Operationen durchführen kann.
 
 ### Datenakquisition
 
@@ -25,6 +28,12 @@ Für die Installationsanleitung, können wir ganz stolz auf unser [Dokumentation
 
 ### Auswertung
 
+Die Anforderungen wurden ziemlich gut getroffen. Unser App basiert auf einen lokal gehosteten LLM. Die App wird in das Django App von Datahub eingebettet bzw. die ChatBot kann man mittels der Datahub Interface erreichen. Mehr dazu in der [Dokumentation](https://github.com/benedikt-weyer/datahub-ai/wiki/Documentation). Unser Repository wird unter MIT-Lizenz bereitgestellt. Unser Entwicklung basiert auf die lokale Verwendbarkeit der Daten, was nur einmalig bei der Einrichtung Internetverbindung anfordert.
+
 ### Bekannte Fehler
 
+insert info
+
 ### Erweiterung und Ausblick
+
+insert info
