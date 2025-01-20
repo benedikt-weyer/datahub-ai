@@ -27,11 +27,13 @@ def select_important_tables(query_string, table_info, table_selector_llm: Ollama
 
     # extract values from response
     is_sql_query_necessary = extract_value_from_response_string(output.text, 'SQL_Query_Necessary')
+    print(is_sql_query_necessary)
+    is_sql_query_necessary_bool = True if is_sql_query_necessary == 'true' else False
     selected_tables = extract_value_from_response_string(output.text, 'Selected_Tables')
 
 
 
     return {
-        'is_sql_query_necessary': is_sql_query_necessary,
+        'is_sql_query_necessary': is_sql_query_necessary_bool,
         'relavant_tables': selected_tables
     }
