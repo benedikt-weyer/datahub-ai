@@ -9,6 +9,8 @@ from llama_index.core import PromptTemplate
 
 from datahub_ai.logic import data_description_logic
 from datahub_ai.ai.custom_rag_pipeline_ai import table_selector
+from datahub_ai.ai.custom_rag_pipeline_ai import sql_query_generator
+
 
 
 def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_history=None):
@@ -33,6 +35,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     embedding_standard_embedding = embedding_mxbai
     llm_table_selector = llm_gemma2
     llm_chat_assistent = llm_gemma2
+    llm_sql_query_generation = llm_gemma2
     
 
     # init chat engine
@@ -44,13 +47,22 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     # get relevant tables
     table_selector_response = table_selector.select_important_tables(query_string, table_infos, llm_table_selector)
-    relevant_tables = table_selector_response['relavant_tables']
+    relevant_table_names = table_selector_response['relavant_tables']
     is_sql_query_necessary = table_selector_response['is_sql_query_necessary']
 
     if is_sql_query_necessary:
-        response = chat_assistant_engine.chat(query_string)
+        # get relevant table infos
+        relevant_table_infos = [table_info for table_info in table_infos if table_info['table_name'] in relevant_table_names]
+
+        # generate sql query
+        sql_query_generation_response = sql_query_generator.generate_sql_query(query_string, relevant_table_infos, llm_sql_query_generation)
+        sql_query = sql_query_generation_response['sql_query']
+
+
+        response = sql_query
     else:
-        response = 'Test response'
+        response = chat_assistant_engine.chat(query_string)
+        
 
 
     # RESPONSE_TMPL = (
