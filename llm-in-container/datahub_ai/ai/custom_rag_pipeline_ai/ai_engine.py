@@ -44,15 +44,17 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     # get table infos
     table_infos = data_description_logic.get_active_tables(without_docker)
+    table_infos_formated = [{'table_name': table.get('table_name'), 'table_description': table.get('table_description')} for table in table_infos]
+
 
     # get relevant tables
-    table_selector_response = table_selector.select_important_tables(query_string, table_infos, llm_table_selector)
+    table_selector_response = table_selector.select_important_tables(query_string, table_infos_formated, llm_table_selector)
     relevant_table_names = table_selector_response['relavant_tables']
     is_sql_query_necessary = table_selector_response['is_sql_query_necessary']
 
     if is_sql_query_necessary:
         # get relevant table infos
-        relevant_table_infos = [table_info for table_info in table_infos if table_info['table_name'] in relevant_table_names]
+        relevant_table_infos = [table_info for table_info in table_infos_formated if table_info['table_name'] in relevant_table_names]
 
         # generate sql query
         sql_query_generation_response = sql_query_generator.generate_sql_query(query_string, relevant_table_infos, llm_sql_query_generation)
