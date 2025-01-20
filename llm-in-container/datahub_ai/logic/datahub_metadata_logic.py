@@ -12,29 +12,27 @@ from pprint import pprint as pp
 def get_datahub_tables_metadata(without_docker_flag=False):
     
     datahub_data = get_datahub_table_metadata(without_docker = without_docker_flag)
-    
-    pp(datahub_data)
-    table_data_in_string_format = list()
-    # Dictionary format key : table name value : description
-    # id s raus name raus aus description
+
+    table_map = {}
     
     for table in sorted(datahub_data, key=lambda table: table["id"]):
+        
+        
+        
         if table["description"].find("you can find follow up") != -1:
             table["description"] =  'not available'
+            
         if table['related_to'] == '':
            related= f"and it is not related to any tables. "
         else:
-            related = f" and it is related to following tables '{table['related_to']}'."
+            related = f" and it is related to the tables {table['related_to']}."
         
         description = (
-        f"The table with the id {table['id']} belongs to the category '{table['category_name']}' and the category key is '{table['category_key']}'. "
-        f"The contained information describes '{table['name']}', {related}. "
+        f"This table belongs to the category '{table['category_name']}' and the category key is '{table['category_key']}'. "
+        f"The contained information describes {table['name']}, {related}. "
         f"The information this table provides is {table['description']}, measured in '{table['database_unit']}', "
         f"and the data coverage is {table['temporal_coverage']}."
         )
-        print(description)
-        table_data_in_string_format.append(description)
+        table_map[table['key']] = description
         
-        
-       
-    return table_data_in_string_format
+    return table_map
