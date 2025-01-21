@@ -32,8 +32,12 @@ Die Anforderungen wurden ziemlich gut getroffen. Unser App basiert auf einen lok
 
 ### Bekannte Fehler
 
-insert info
+SQL Generation bei generischen anfragen
 
 ### Erweiterung und Ausblick
 
-insert info
+Kubernetes
+Github Issues
+AUth
+User Sessions
+Feedback
