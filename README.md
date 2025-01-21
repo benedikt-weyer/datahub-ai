@@ -33,12 +33,11 @@ Die Anforderungen wurden gut getroffen. Unser App basiert auf einen lokal gehost
 
 ### Bekannte Fehler
 
-SQL Generation bei generischen anfragen
+Wenn etwas schief gehen kann, wird es auch schief gehen. In unserem Fall können wir derzeit nicht verhindern, dass der LLM versucht, generische Fragen durch SQL-Abfragen zu beantworten.
+Das macht uns einige Dinge schwer, nämlich die natürlichere, menschenähnliche Interaktion mit dem Bot und vielleicht die Robustheit gegenüber Anfragen, die Fehler enthalten
 
 ### Erweiterung und Ausblick
 
-Kubernetes
-Github Issues
-AUth
-User Sessions
-Feedback
+In Zukunft möchten wir unser Produkt in Kubernetes einsetzen können. Das hat bis zu einem gewissen Grad funktioniert, aber es sind noch einige Konfigurationen für die Infrastruktur und das Ressourcenmanagement erforderlich. Andererseits müssen wir die Abfragen immer mit zusätzlichen Informationen anreichern, um die Abfrageleistung und -qualität zu erhöhen. Wir arbeiten derzeit an einer flexibleren Möglichkeit, dies zu tun.
+Optimalerweise würden wir eine Benutzerauthentifizierung und eine Benutzersitzungsfunktion einführen, um die persönliche Nutzung zu verbessern. Obwohl das Produkt für die lokale Nutzung konzipiert ist, würde ein Benutzer über eine Kontextsensitivität verfügen, die die kurzfristige Qualität drastisch verbessern würde.
+Darüber hinaus würden wir gerne eine Art Feedback-Mechanismus für das Modell einführen, der im laufenden Betrieb arbeitet und das LLM langfristig verbessert, so dass sich die Qualität über die Zeit der Nutzung selbst verbessert.
