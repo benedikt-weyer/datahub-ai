@@ -33,8 +33,12 @@ Die Anforderungen wurden gut getroffen. Unser App basiert auf einen lokal gehost
 
 ### Bekannte Fehler
 
-insert info
+SQL Generation bei generischen anfragen
 
 ### Erweiterung und Ausblick
 
-insert info
+Kubernetes
+Github Issues
+AUth
+User Sessions
+Feedback
