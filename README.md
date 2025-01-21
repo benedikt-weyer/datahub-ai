@@ -1,67 +1,43 @@
-# DataHub ChatBot LLM
+### Zielsetzung
 
-This is a combination of a [Data Hub](https://github.com/datasnack/datahub) instance and a Chat-Bot powered by an LLM for interaction.
+Unser Ziel ist mithilfe des Einsatzes von KI die Datenbereitstellung im Bereich Public Health zu verbessern. Speziell fokussieren wir uns hier auf das Datahub. Unsere Lösung ist ein ChatBot, welcher die Exploration und Abfragen von Daten aus dem DataHub vereinfacht. Durch die Anwendung von KI ermöglichen wir nicht-technischen Fachleuten, wie Akteuren aus der Forschung oder engagierten Menschen aus dem öffentlichen Gesundheitswesen, die Exploration der vorhandenen Daten durch natürliche Sprache!
 
-The Data Hub is a geographic information system (GIS) featuring a data fusion engine designed for data harmonization, alongside an interactive dashboard for effective data exploration and collaboration. Its key objective is to merge data of multiple formats and sources across temporal and spatial axes, allowing users to combine, analyze, and interpret the data.
+### Teammitglieder und Rollen
 
+Unser Team besteht aus 4 Personen aus 3 Disziplinen:
 
-## Installation
+-   Benedikt Weyer, Angewandte Informatik, verantwortlich für die Software Entwicklung und Architektur
+-   Michael German, Informatik Technischer Systeme, verantwortlich für die Software Entwicklung
+-   Jan Biedasiek, Informatik Technischer Systeme, verantwortlich für das Testen unserer Systeme
+-   Yunus Sözeri, Wirtschaftsinformatik, verantwortlich für die Benutzeroberfläche und Dokumentation
 
-We can clone the Ghana Hub instance (this repository) into a new folder:
+### Design
 
-- Clone the repository `$ git clone https://github.com/datasnack/datahub.git`
-- Copy the `.env.example` to `.env`: `$ cp .env.example .env`
-- Open the `.env` file and make sure the following variables are set `SECRET_KEY`, `DATAHUB_NAME` (instructions are inside the `.env` file)
-- Run `$ docker compose up -d`
-- Wait/check until [http://localhost:8000/](http://localhost:8000/) shows the Data Hub interface
+Unser Hauptvorteil ist, dass die Benutzeroberfläche mit Datahub-Interface integriert ist, weil uns Benutzerfreundlichkeit am Herzen liegt. Außerdem ist das Design sehr intuitiv und gut dokumentiert, damit auch Leute mit wenig technischem Verständnis das Projekt installieren können.
 
-After this you can start/stop the system with:
+Hinter den Kulissen sieht es anders aus. Wir haben uns für ein containerbasiertes Software-Design entschieden. Die Verantwortlichkeiten werden durch Container getrennt und mithilfe von Schnittstellen verbunden. Das bietet uns eine sinnvolle und intuitive Abstraktion, was auch die Entwicklung neuer Features oder die Verbesserung existierender Features vereinfacht.
 
-    $ docker compose start
-    $ docker compose stop
+Haupteingangspunkt ist die in Datahub eingebettete Benutzeroberfläche. Daraus werden Anfragen an das Programm weitergeleitet und die anderen Container kommen dann zum Einsatz. Beispielsweise werden die Daten der eigenen Container gehostet und die Schnittstelle wird unserem KI-Programm bereitgestellt, womit die KI die gegebene Anfrage bewerten kann und dementsprechend auf die nötigen Daten zugreifen kann und wenn nötig sogar Aggregationen bzw. mathematische Operationen durchführen kann.
 
-If you change the `.env` file run the following command to apply the changes:
+### Datenakquisition
 
-    $ docker compose up -d
+Unsere Daten kommen aus Datahub-Datasnack. Datahub wird als Open-Source-Anwendung zur Verfügung gestellt. Wir haben uns aus dem Datenkatalog auf die Ghana-Daten konzentriert.
 
-Now either import an existing data dump, or create a new instance.
+### Installationsanleitung
 
-### Ollama Setup
+Für die Installationsanleitung, verweisen wir gerne auf unser [Dokumentation](https://github.com/benedikt-weyer/datahub-ai/wiki/Documentation).
 
-To download the required model run: `$ docker compose exec ollama ollama pull dolphin-llama3:latest`
+### Auswertung
 
-### Import Data
+Die Anforderungen wurden gut getroffen. Unser App basiert auf einen lokal gehosteten LLM. Die App wird in das Django App von Datahub eingebettet bzw. die ChatBot kann man mittels der Datahub Interface erreichen. Mehr dazu in der [Dokumentation](https://github.com/benedikt-weyer/datahub-ai/wiki/Documentation). Unser Repository wird unter MIT-Lizenz bereitgestellt. Unser Entwicklung basiert auf die lokale Verwendbarkeit der Daten, was nur einmalig bei der Einrichtung Internetverbindung anfordert.
 
-We provide ready-to-use database export for Ghana that you can use to directly see and use the system without the need to download and process the raw data on your local machine.
+### Bekannte Fehler
 
-Go to the [releases](https://github.com/datasnack/dh-ghana/releases) page and download the latest `*.dump` file and place it in the `./data/` folder.
+Wenn etwas schief gehen kann, wird es auch schief gehen. In unserem Fall können wir derzeit nicht verhindern, dass der LLM versucht, generische Fragen durch SQL-Abfragen zu beantworten.
+Das macht uns einige Dinge schwer, nämlich die natürlichere, menschenähnliche Interaktion mit dem Bot und vielleicht die Robustheit gegenüber Anfragen, die Fehler enthalten
 
-Run the following command from the root of the repository:
+### Erweiterung und Ausblick
 
-    $ docker compose exec datahub python manage.py restore ./data/<downloaded *.dump file>
-
-
-### Create Super-User
-
-Run the following command to create a new user with which you can log in into the backend ([http://localhost:8000/admin](http://localhost:8000/)):
-
-    $ docker compose exec datahub python manage.py createsuperuser
-
-
-### Create dump
-
-In case you need to export the data use: `$ docker compose exec datahub python manage.py dump`. An export file will be created in the `./data/` directory.
-
-
-## Customization
-
-Create custom app to add new functionality and/or overload templates (i.e., start page).
-
-    mkdir ./src/<name>
-    docker compose exec datahub python manage.py startapp <name> ./src/<name>
-
-Then add it in the `.env` to the key `INSTALLED_USER_APPS` (comma separated list) like `src.<name>`.
-
-Finally, inside the created app in `src/<name>/apps.py` change `name = <name>` to `name = src.<name>`.
-
-After that you need to rebuild/start the container with `docker compose up -d`.
+In Zukunft möchten wir unser Produkt in Kubernetes einsetzen können. Das hat bis zu einem gewissen Grad funktioniert, aber es sind noch einige Konfigurationen für die Infrastruktur und das Ressourcenmanagement erforderlich. Andererseits müssen wir die Abfragen immer mit zusätzlichen Informationen anreichern, um die Abfrageleistung und -qualität zu erhöhen. Wir arbeiten derzeit an einer flexibleren Möglichkeit, dies zu tun.
+Optimalerweise würden wir eine Benutzerauthentifizierung und eine Benutzersitzungsfunktion einführen, um die persönliche Nutzung zu verbessern. Obwohl das Produkt für die lokale Nutzung konzipiert ist, würde ein Benutzer über eine Kontextsensitivität verfügen, die die kurzfristige Qualität drastisch verbessern würde.
+Darüber hinaus würden wir gerne eine Art Feedback-Mechanismus für das Modell einführen, der im laufenden Betrieb arbeitet und das LLM langfristig verbessert, so dass sich die Qualität über die Zeit der Nutzung selbst verbessert.
