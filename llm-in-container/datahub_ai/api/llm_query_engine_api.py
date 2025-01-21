@@ -5,7 +5,7 @@ from flask_cors import CORS, cross_origin
 from bson import json_util
 
 
-from logic import data_description_logic, query_logic
+from datahub_ai.logic import data_description_logic, query_logic
 
 # Initialize the Flask application and the LLMQueryEngine instance
 app = Flask(__name__)

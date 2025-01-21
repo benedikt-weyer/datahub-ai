@@ -28,4 +28,4 @@ ARG RUN_TESTS=false
 RUN if [ "$RUN_TESTS" = "true" ] ; then pip install pytest && pytest ; fi
 
 # Run the Flask app when the container starts
-CMD ["python", "-m", "api.llm_query_engine_api"]
+CMD ["python", "-m", "datahub_ai.api.llm_query_engine_api"]

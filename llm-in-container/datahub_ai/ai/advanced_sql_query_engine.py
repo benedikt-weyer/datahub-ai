@@ -28,10 +28,45 @@ from llama_index.core.query_pipeline import (
 from llama_index.core.prompts.prompt_type import PromptType
 from llama_index.core.llms import ChatResponse
 
-from logic import data_description_logic
+from datahub_ai.logic import data_description_logic
 
 
 import phoenix as px
+
+def parse_response_to_sql(response: ChatResponse) -> str:
+        global verbose_output_submit_query 
+        sql_query = ''
+
+        #extract message content
+        message_content = response.message.content
+
+        print('####')
+        print(response)
+        print('####')
+
+        verbose_output_submit_query += f"<b>Raw SQL generation response message content:</b> {message_content}\n"
+
+        #find sql query location
+        sql_query_start = message_content.find("SQLQuery:")
+        #sql_query_end = message_content.find("SQLResult:")
+
+        #extract sql query
+        if sql_query_start != -1:
+            sql_query = message_content[sql_query_start + len("SQLQuery:"):]
+        else: 
+            #error: no sql query found
+            return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
+
+
+        #format & error correct sql query
+        sql_query = sql_query.strip()
+        sql_query = sql_query.strip("```")
+        sql_query = sql_query.replace("`", "")
+        sql_query = sql_query.strip()
+
+        verbose_output_submit_query += f"<b>Formatted SQL query:</b> {sql_query}\n"
+
+        return sql_query
 
 verbose_output_submit_query = str()
 
@@ -139,9 +174,6 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
     )
     obj_retriever = obj_index.as_retriever(similarity_top_k=3)
 
-
-
-
     MODIFIED_TEXT_TO_SQL_TMPL = (
         "Given an input question, first create a syntactically correct {dialect} "
         "query to run, then look at the results of the query and return the answer. "
@@ -154,21 +186,25 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         "Be careful to not query for columns that do not exist. "
         "Pay attention to which column is in which table. "
         "Also, qualify column names with the table name when needed. "
-        "'id' is not short for 'index'"
-        "When asked for a shape/shapes, make the sql query return the name of the shape/shapes"
+        "'id' is not short for 'index' "
+        "When asked for a shape/shapes, make the sql query return the name of the shape/shapes "
 
-        "Provide an valid Postgres SQL statement."
+        "Provide an valid Postgres SQL statement. "
+        "When you want to filter for Countries or Regions or Districts, use shapes_shape and shapes_type and join them on shape_id=id. "
+        #"Countries and Regions and Districts are writen in upercase when used in the query. "
+        "Do not use name = 'District' in this table or similar!! "
+        "All the data is refering to Ghana, so do not use 'Ghana' in the query. "
         #"Do NOT use aliases (like AS)."
 
         "You are required to use the following format, each taking one line:\n\n"
         "Question: Question here\n"
-        "SQLQuery: SQL Query to run\n\n"
-        #"SQLResult: Result of the SQLQuery\n"
-        #"Answer: Final answer here\n\n"
+        "SQLQuery: SQL Query to run\n"
+        "SQLResult: Result of the SQLQuery\n"
+        "Answer: Final answer here\n\n"
         "Only use tables listed below.\n"
         "{schema}\n\n"
         "Question: {query_str}\n"
-        #"SQLQuery: "
+        "SQLQuery: "
     )
 
     MODIFIED_TEXT_TO_SQL_PROMPT = PromptTemplate(
@@ -180,42 +216,6 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
     text2sql_prompt = MODIFIED_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
     #text2sql_prompt = DEFAULT_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
-
-    def parse_response_to_sql(response: ChatResponse) -> str:
-        global verbose_output_submit_query 
-        sql_query = ''
-
-        #extract message content
-        message_content = response.message.content
-
-        print('####')
-        print(response)
-        print('####')
-
-        verbose_output_submit_query += f"<b>Raw SQL generation response message content:</b> {message_content}\n"
-
-        #find sql query location
-        sql_query_start = message_content.find("SQLQuery:")
-        #sql_query_end = message_content.find("SQLResult:")
-
-        #extract sql query
-        if sql_query_start != -1:
-            sql_query = message_content[sql_query_start + len("SQLQuery:"):]
-        else: 
-            #error: no sql query found
-            return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
-
-
-        #format & error correct sql query
-        sql_query = sql_query.strip()
-        sql_query = sql_query.strip("```")
-        sql_query = sql_query.replace("`", "")
-        sql_query = sql_query.strip()
-
-        verbose_output_submit_query += f"<b>Formatted SQL query:</b> {sql_query}\n"
-
-        return sql_query
-
 
     sql_parser_component = FnComponent(fn=parse_response_to_sql)
 
@@ -290,6 +290,7 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         #query="For my research project on malaria, I need precipitation data for the period from January 2020 to December 2023. Are these data available, and in what resolution?"
         #query="What regions are found in the data?"
     )
+    print(str(response))
 
     
 
@@ -302,3 +303,6 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         return {
             "response": str(response.message.content)
         }
+    
+def add_one_to_nr(number) -> int:
+    return number+1

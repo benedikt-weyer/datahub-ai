@@ -1,4 +1,4 @@
-from data_access import data_description_access, datahub_tables_access
+from datahub_ai.data_access import data_description_access, datahub_tables_access
 
 
 def get_inactive_table_names():
@@ -15,9 +15,9 @@ def get_inactive_table_names():
     return inactive_table_names
 
 
-def get_active_tables():
+def get_active_tables(without_docker=False):
     # get all active tables from mongo db
-    active_tables = data_description_access.get_active_tables().to_list()
+    active_tables = data_description_access.get_active_tables(without_docker).to_list()
 
     return active_tables
 
