@@ -52,7 +52,10 @@ def parse_response_to_sql(response: ChatResponse) -> str:
 
         #extract sql query
         if sql_query_start != -1:
-            sql_query = message_content[sql_query_start + len("SQLQuery:"):]
+            sql_query_end = message_content.find("\n", sql_query_start)
+            if sql_query_end == -1:
+                sql_query_end = len(message_content)
+            sql_query = message_content[sql_query_start + len("SQLQuery:"):sql_query_end]
         else: 
             #error: no sql query found
             return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
