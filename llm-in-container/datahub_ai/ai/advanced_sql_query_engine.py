@@ -52,7 +52,10 @@ def parse_response_to_sql(response: ChatResponse) -> str:
 
         #extract sql query
         if sql_query_start != -1:
-            sql_query = message_content[sql_query_start + len("SQLQuery:"):]
+            sql_query_end = message_content.find("\n", sql_query_start)
+            if sql_query_end == -1:
+                sql_query_end = len(message_content)
+            sql_query = message_content[sql_query_start + len("SQLQuery:"):sql_query_end]
         else: 
             #error: no sql query found
             return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
@@ -198,13 +201,13 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
         "You are required to use the following format, each taking one line:\n\n"
         "Question: Question here\n"
-        "SQLQuery: SQL Query to run\n"
-        "SQLResult: Result of the SQLQuery\n"
-        "Answer: Final answer here\n\n"
+        "SQLQuery: SQL Query to run\n\n"
+        #"SQLResult: Result of the SQLQuery\n"
+        #"Answer: Final answer here\n\n"
         "Only use tables listed below.\n"
         "{schema}\n\n"
         "Question: {query_str}\n"
-        "SQLQuery: "
+        #"SQLQuery: "
     )
 
     MODIFIED_TEXT_TO_SQL_PROMPT = PromptTemplate(
