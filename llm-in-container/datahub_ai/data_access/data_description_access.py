@@ -4,7 +4,14 @@ client = MongoClient('mongo', 27017, username='root', password='example')
 datahub_ai_db = client.datahub_ai
 
 
-def get_active_tables():
+def get_active_tables(without_docker=False):
+    if without_docker:
+        client2 = MongoClient('localhost', 27017, username='root', password='example')
+        datahub_ai_db2 = client2.datahub_ai
+
+        active_tables = datahub_ai_db2.active_tables.find()
+
+        return active_tables
 
     active_tables = datahub_ai_db.active_tables.find()
 
