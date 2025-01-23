@@ -28,10 +28,48 @@ from llama_index.core.query_pipeline import (
 from llama_index.core.prompts.prompt_type import PromptType
 from llama_index.core.llms import ChatResponse
 
-from logic import data_description_logic
+from datahub_ai.logic import datahub_metadata_logic, data_description_logic
 
 
 import phoenix as px
+
+def parse_response_to_sql(response: ChatResponse) -> str:
+        global verbose_output_submit_query 
+        sql_query = ''
+
+        #extract message content
+        message_content = response.message.content
+
+        print('####')
+        print(response)
+        print('####')
+
+        verbose_output_submit_query += f"<b>Raw SQL generation response message content:</b> {message_content}\n"
+
+        #find sql query location
+        sql_query_start = message_content.find("SQLQuery:")
+        #sql_query_end = message_content.find("SQLResult:")
+
+        #extract sql query
+        if sql_query_start != -1:
+            sql_query_end = message_content.find("\n", sql_query_start)
+            if sql_query_end == -1:
+                sql_query_end = len(message_content)
+            sql_query = message_content[sql_query_start + len("SQLQuery:"):sql_query_end]
+        else: 
+            #error: no sql query found
+            return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
+
+
+        #format & error correct sql query
+        sql_query = sql_query.strip()
+        sql_query = sql_query.strip("```")
+        sql_query = sql_query.replace("`", "")
+        sql_query = sql_query.strip()
+
+        verbose_output_submit_query += f"<b>Formatted SQL query:</b> {sql_query}\n"
+
+        return sql_query
 
 verbose_output_submit_query = str()
 
@@ -90,15 +128,14 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
     #create sql retriever
     sql_retriever = SQLRetriever(sql_database)
 
-
+   # datahub_table_infos = dml.get_datahub_tables_metadata()
     # get table infos / table descriptions + active tables
     table_infos = data_description_logic.get_active_tables()
+    table_infos_from_datahub = datahub_metadata_logic.get_datahub_tables_metadata()
     print(table_infos, flush=True)
 
     formated_table_infos = '\n'.join(str(table.get('table_name') + ': ' + table.get('table_description')) for table in table_infos)
     verbose_output_submit_query += f"<b>Available tables and their description:</b>\n {formated_table_infos}\n\n"
-
-
 
     def get_table_context_str(table_schema_objs: List[SQLTableSchema]):
         global verbose_output_submit_query 
@@ -115,7 +152,9 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
                 table_info += table_opt_context
 
             context_strs.append(table_info)
-
+            
+           
+### concat the result from datahub request to the string
         formated_selected_table_infos = '\n'.join(context_strs)
         verbose_output_submit_query += f"<b>Selected tables and their description:</b>\n {formated_selected_table_infos}\n\n"
 
@@ -126,8 +165,12 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
     table_node_mapping = SQLTableNodeMapping(sql_database)
 
+## context string += my table descriptions
     table_schema_objs = [
-        SQLTableSchema(table_name=table.get('table_name'), context_str=table.get('table_description'))
+        SQLTableSchema(
+            table_name=table.get('table_name'), 
+            context_str=table.get('table_description') + table_infos_from_datahub.get(table.get('table_name'), '')
+        )
         for table in table_infos
     ]  # add a SQLTableSchema for each table
 
@@ -138,9 +181,6 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         embed_model=ollama_embedding
     )
     obj_retriever = obj_index.as_retriever(similarity_top_k=3)
-
-
-
 
     MODIFIED_TEXT_TO_SQL_TMPL = (
         "Given an input question, first create a syntactically correct {dialect} "
@@ -166,13 +206,13 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
         "You are required to use the following format, each taking one line:\n\n"
         "Question: Question here\n"
-        "SQLQuery: SQL Query to run\n"
-        "SQLResult: Result of the SQLQuery\n"
-        "Answer: Final answer here\n\n"
+        "SQLQuery: SQL Query to run\n\n"
+        #"SQLResult: Result of the SQLQuery\n"
+        #"Answer: Final answer here\n\n"
         "Only use tables listed below.\n"
         "{schema}\n\n"
         "Question: {query_str}\n"
-        "SQLQuery: "
+        #"SQLQuery: "
     )
 
     MODIFIED_TEXT_TO_SQL_PROMPT = PromptTemplate(
@@ -184,42 +224,6 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
     text2sql_prompt = MODIFIED_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
     #text2sql_prompt = DEFAULT_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
-
-    def parse_response_to_sql(response: ChatResponse) -> str:
-        global verbose_output_submit_query 
-        sql_query = ''
-
-        #extract message content
-        message_content = response.message.content
-
-        print('####')
-        print(response)
-        print('####')
-
-        verbose_output_submit_query += f"<b>Raw SQL generation response message content:</b> {message_content}\n"
-
-        #find sql query location
-        sql_query_start = message_content.find("SQLQuery:")
-        #sql_query_end = message_content.find("SQLResult:")
-
-        #extract sql query
-        if sql_query_start != -1:
-            sql_query = message_content[sql_query_start + len("SQLQuery:"):]
-        else: 
-            #error: no sql query found
-            return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
-
-
-        #format & error correct sql query
-        sql_query = sql_query.strip()
-        sql_query = sql_query.strip("```")
-        sql_query = sql_query.replace("`", "")
-        sql_query = sql_query.strip()
-
-        verbose_output_submit_query += f"<b>Formatted SQL query:</b> {sql_query}\n"
-
-        return sql_query
-
 
     sql_parser_component = FnComponent(fn=parse_response_to_sql)
 

@@ -1,4 +1,4 @@
-from ai import advanced_sql_query_engine
+from datahub_ai.ai import advanced_sql_query_engine
 
 def query_ai(query_string, is_verbose=False):
 
