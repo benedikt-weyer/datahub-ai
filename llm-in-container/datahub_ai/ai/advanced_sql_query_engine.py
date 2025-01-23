@@ -28,7 +28,7 @@ from llama_index.core.query_pipeline import (
 from llama_index.core.prompts.prompt_type import PromptType
 from llama_index.core.llms import ChatResponse
 
-from datahub_ai.logic import data_description_logic
+from datahub_ai.logic import datahub_metadata_logic, data_description_logic
 
 
 import phoenix as px
@@ -128,15 +128,14 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
     #create sql retriever
     sql_retriever = SQLRetriever(sql_database)
 
-
+   # datahub_table_infos = dml.get_datahub_tables_metadata()
     # get table infos / table descriptions + active tables
     table_infos = data_description_logic.get_active_tables()
+    table_infos_from_datahub = datahub_metadata_logic.get_datahub_tables_metadata()
     print(table_infos, flush=True)
 
     formated_table_infos = '\n'.join(str(table.get('table_name') + ': ' + table.get('table_description')) for table in table_infos)
     verbose_output_submit_query += f"<b>Available tables and their description:</b>\n {formated_table_infos}\n\n"
-
-
 
     def get_table_context_str(table_schema_objs: List[SQLTableSchema]):
         global verbose_output_submit_query 
@@ -153,7 +152,9 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
                 table_info += table_opt_context
 
             context_strs.append(table_info)
-
+            
+           
+### concat the result from datahub request to the string
         formated_selected_table_infos = '\n'.join(context_strs)
         verbose_output_submit_query += f"<b>Selected tables and their description:</b>\n {formated_selected_table_infos}\n\n"
 
@@ -164,8 +165,12 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
     table_node_mapping = SQLTableNodeMapping(sql_database)
 
+## context string += my table descriptions
     table_schema_objs = [
-        SQLTableSchema(table_name=table.get('table_name'), context_str=table.get('table_description'))
+        SQLTableSchema(
+            table_name=table.get('table_name'), 
+            context_str=table.get('table_description') + table_infos_from_datahub.get(table.get('table_name'), '')
+        )
         for table in table_infos
     ]  # add a SQLTableSchema for each table
 
@@ -306,6 +311,3 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         return {
             "response": str(response.message.content)
         }
-    
-def add_one_to_nr(number) -> int:
-    return number+1
