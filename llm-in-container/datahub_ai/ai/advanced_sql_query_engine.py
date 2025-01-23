@@ -167,7 +167,10 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
 ## context string += my table descriptions
     table_schema_objs = [
-        SQLTableSchema(table_name=table.get('table_name'), context_str=table.get('table_description') + table_infos_from_datahub[table.get('table_name')])
+        SQLTableSchema(
+            table_name=table.get('table_name'), 
+            context_str=table.get('table_description') + table_infos_from_datahub.get(table.get('table_name'), '')
+        )
         for table in table_infos
     ]  # add a SQLTableSchema for each table
 
