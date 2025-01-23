@@ -33,6 +33,44 @@ from datahub_ai.logic import datahub_metadata_logic, data_description_logic
 
 import phoenix as px
 
+def parse_response_to_sql(response: ChatResponse) -> str:
+        global verbose_output_submit_query 
+        sql_query = ''
+
+        #extract message content
+        message_content = response.message.content
+
+        print('####')
+        print(response)
+        print('####')
+
+        verbose_output_submit_query += f"<b>Raw SQL generation response message content:</b> {message_content}\n"
+
+        #find sql query location
+        sql_query_start = message_content.find("SQLQuery:")
+        #sql_query_end = message_content.find("SQLResult:")
+
+        #extract sql query
+        if sql_query_start != -1:
+            sql_query_end = message_content.find("\n", sql_query_start)
+            if sql_query_end == -1:
+                sql_query_end = len(message_content)
+            sql_query = message_content[sql_query_start + len("SQLQuery:"):sql_query_end]
+        else: 
+            #error: no sql query found
+            return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
+
+
+        #format & error correct sql query
+        sql_query = sql_query.strip()
+        sql_query = sql_query.strip("```")
+        sql_query = sql_query.replace("`", "")
+        sql_query = sql_query.strip()
+
+        verbose_output_submit_query += f"<b>Formatted SQL query:</b> {sql_query}\n"
+
+        return sql_query
+
 verbose_output_submit_query = str()
 
 def submit_query(query_string, is_verbose, without_docker=False, override_ollama_api_url=None):
@@ -141,9 +179,6 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
     )
     obj_retriever = obj_index.as_retriever(similarity_top_k=3)
 
-
-
-
     MODIFIED_TEXT_TO_SQL_TMPL = (
         "Given an input question, first create a syntactically correct {dialect} "
         "query to run, then look at the results of the query and return the answer. "
@@ -186,42 +221,6 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
 
     text2sql_prompt = MODIFIED_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
     #text2sql_prompt = DEFAULT_TEXT_TO_SQL_PROMPT.partial_format(dialect=engine.dialect.name)
-
-    def parse_response_to_sql(response: ChatResponse) -> str:
-        global verbose_output_submit_query 
-        sql_query = ''
-
-        #extract message content
-        message_content = response.message.content
-
-        print('####')
-        print(response)
-        print('####')
-
-        verbose_output_submit_query += f"<b>Raw SQL generation response message content:</b> {message_content}\n"
-
-        #find sql query location
-        sql_query_start = message_content.find("SQLQuery:")
-        #sql_query_end = message_content.find("SQLResult:")
-
-        #extract sql query
-        if sql_query_start != -1:
-            sql_query = message_content[sql_query_start + len("SQLQuery:"):]
-        else: 
-            #error: no sql query found
-            return "WITH non_existent_table AS (SELECT 'no sql query provided' as error) SELECT * FROM non_existent_table;"
-
-
-        #format & error correct sql query
-        sql_query = sql_query.strip()
-        sql_query = sql_query.strip("```")
-        sql_query = sql_query.replace("`", "")
-        sql_query = sql_query.strip()
-
-        verbose_output_submit_query += f"<b>Formatted SQL query:</b> {sql_query}\n"
-
-        return sql_query
-
 
     sql_parser_component = FnComponent(fn=parse_response_to_sql)
 
@@ -296,6 +295,7 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         #query="For my research project on malaria, I need precipitation data for the period from January 2020 to December 2023. Are these data available, and in what resolution?"
         #query="What regions are found in the data?"
     )
+    print(str(response))
 
     
 
@@ -308,5 +308,3 @@ def submit_query(query_string, is_verbose, without_docker=False, override_ollama
         return {
             "response": str(response.message.content)
         }
-
-submit_query("What years are covered in the data",True)
