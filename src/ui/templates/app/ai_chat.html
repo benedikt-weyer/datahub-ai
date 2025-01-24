@@ -138,6 +138,8 @@
 	</div>
 
 	<script>
+		let chatHistory = null;
+
 		async function sendQueryToLLMDirectly() {
 			const userInput = document.getElementById("user-input");
 			const query = userInput.value.trim();
@@ -160,7 +162,8 @@
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ 
 					query: query,
-					is_verbose: isVerbose
+					is_verbose: isVerbose,
+					chat_store_json: chatHistory
 				})
 			})
 			.then((response) => response.json())
@@ -168,6 +171,9 @@
 
 				// Remove loader
 				loaderAssistantMessageDiv.remove();
+
+				// update chat history
+				chatHistory = data.chat_store_json;
 
 				//Add verose output
 				if(data.verbose_output){

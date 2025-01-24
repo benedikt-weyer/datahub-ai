@@ -5,6 +5,9 @@ from llama_index.llms.ollama import Ollama
 from llama_index.core.chat_engine import SimpleChatEngine
 from llama_index.embeddings.ollama import OllamaEmbedding
 from llama_index.core import PromptTemplate
+from llama_index.core.storage.chat_store import SimpleChatStore
+from llama_index.core.memory import ChatMemoryBuffer
+from llama_index.core.base.llms.types import ChatMessage
 
 from sqlalchemy import create_engine
 from sqlalchemy.sql import text
@@ -15,7 +18,7 @@ from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_gener
 
 
 
-def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_history=None):
+def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_store=None, chat_memory=None):
 
     verbose_output_submit_query = f'## Verbose output ##\n'
 
@@ -55,7 +58,15 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     
 
     # init chat engine
-    chat_assistant_engine = SimpleChatEngine.from_defaults(llm=llm_chat_assistent, embedding=embedding_standard_embedding, chat_history=chat_history)
+    if chat_store is None:
+        chat_store = SimpleChatStore()
+    
+    chat_memory = ChatMemoryBuffer.from_defaults(
+        chat_store=chat_store,
+        chat_store_key="user1",
+    )
+
+    chat_assistant_engine = SimpleChatEngine.from_defaults(llm=llm_chat_assistent, embedding=embedding_standard_embedding, memory=chat_memory)
     
 
     # get table infos
@@ -95,6 +106,9 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     if is_sql_query_necessary:
 
+        # add query to chat store
+        chat_store.add_message("user1", ChatMessage(role="user", content=query_string))
+
         # get relevant table infos
         relevant_table_infos = [table_info for table_info in table_infos_formated if table_info['table_name'] in relevant_table_names]
 
@@ -130,13 +144,6 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
         verbose_output_submit_query += f"<b>Generated SQL Queries:</b> {sql_queries}\n\n"
 
-        if sql_queries is None:
-            response = "Sorry, I could not generate a valid SQL query for the given question."
-            return {
-                "response": response,
-                "chat_history": chat_assistant_engine.chat_history,
-            }
-
         # execute sql queries
         sql_query_results = []
         for sql_query in sql_queries:
@@ -157,6 +164,9 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
         # synthesise response
         response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_queries, relevant_table_infos, llm_response_synthesizer)['synthesized_response']
 
+        # add response to chat store
+        chat_store.add_message("user1", ChatMessage(role="assistant", content=response))
+
 
     else:
         response = chat_assistant_engine.chat(query_string).response
@@ -165,7 +175,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     out = {
         "response": response,
-        "chat_history": chat_assistant_engine.chat_history,
+        "chat_store": chat_store,
     }
     
     if is_verbose:
