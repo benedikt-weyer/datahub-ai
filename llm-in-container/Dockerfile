@@ -23,5 +23,9 @@ RUN pip install -r requirements.txt
 # Expose the port on which the Flask app will run
 EXPOSE 8001
 
+# Run tests if RUN_TESTS = true
+ARG RUN_TESTS=false
+RUN if [ "$RUN_TESTS" = "true" ] ; then pip install pytest && pytest ; fi
+
 # Run the Flask app when the container starts
 CMD ["python", "-m", "datahub_ai.api.llm_query_engine_api"]
