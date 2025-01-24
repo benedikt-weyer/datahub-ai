@@ -9,6 +9,8 @@ def synthesize_response(question_string, sql_query_results, sql_queries, relevan
         "Given an input question, synthesize a response from the query results by answering the user's question (listed below) with the sql results listed below. \n"
         "Also always mention the queried tables aka the used datasources. \n"
         "\n"
+        "When it feels right you can add some information from your own knowledge, but alway explicitly declare it as your own knowledge. \n"
+        "\n"
         "When looking for time and/or spatial coverage of the data you can also use the given table metadescription \n"
         "When looking for time and/or spatial resolution of the data you can also use the given table metadescription \n"
         "\n"
