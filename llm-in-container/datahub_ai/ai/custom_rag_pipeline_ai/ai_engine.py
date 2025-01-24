@@ -142,7 +142,9 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
         print(sql_queries)
 
-        verbose_output_submit_query += f"<b>Generated SQL Queries:</b> {sql_queries}\n\n"
+        verbose_output_submit_query += "### Generated SQL Queries:\n"
+        for i, sql_query in enumerate(sql_queries, start=1):
+            verbose_output_submit_query += f"**{i}.** `{sql_query}`\n\n"
 
         # execute sql queries
         sql_query_results = []
