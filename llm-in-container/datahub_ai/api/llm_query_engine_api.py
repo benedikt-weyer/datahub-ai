@@ -4,6 +4,8 @@ from flask import Flask, request, jsonify, Response
 from flask_cors import CORS, cross_origin
 from bson import json_util
 
+from llama_index.core.storage.chat_store import SimpleChatStore
+
 
 from datahub_ai.logic import data_description_logic, query_logic
 
@@ -18,6 +20,11 @@ def query_post():
     data = request.json
     query_string = data.get("query")
     is_verbose = data.get("is_verbose")
+    chat_store_json = data.get("chat_store_json", None)
+    
+    chat_store = None
+    if chat_store_json is not None:
+        chat_store = SimpleChatStore.from_json(chat_store_json)
     
     if not query_string:
         return jsonify({"error": "Missing 'query' parameter"}), 400
@@ -25,12 +32,18 @@ def query_post():
     if not is_verbose:
         is_verbose = False
     
-    result = query_logic.query_ai(query_string, is_verbose)
+    result = query_logic.query_ai(query_string, is_verbose, chat_store=chat_store)
+
+    chat_store_out = result.get("chat_store", None)
+    chat_store_out_json = None
+    if chat_store_out is not None:
+        chat_store_out_json = chat_store_out.json()
 
     return jsonify({
         "query": query_string,
         "response": result.get("response"),
         "verbose_output": result.get("verbose_output"),
+        "chat_store_json": chat_store_out_json,
     })
 
 
