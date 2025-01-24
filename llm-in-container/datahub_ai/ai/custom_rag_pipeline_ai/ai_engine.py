@@ -159,7 +159,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
 
     else:
-        response = chat_assistant_engine.chat(query_string)
+        response = chat_assistant_engine.chat(query_string).response
             
 
 
