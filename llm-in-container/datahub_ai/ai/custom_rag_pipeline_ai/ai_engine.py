@@ -138,23 +138,15 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     else:
         response = chat_assistant_engine.chat(query_string)
-        
+            
 
 
-    # RESPONSE_TMPL = (
-    #     "Repeat back the question in a more structured way, to the user and state the tables that are relevant to the question \n"
-    #     "Question: {query_string}\n"
-    #     "Relevant Tables: {relevant_tables}\n"
-    # )
-    # RESPONSE_PROMPT = PromptTemplate(RESPONSE_TMPL)
-    # response_prompt_string = RESPONSE_PROMPT.format(query_string=query_string, relevant_tables=relevant_tables)
-
-
-    # response = chat_engine.chat(response_prompt_string)
-    
-
-
-    return {
+    out = {
         "response": response,
         "chat_history": chat_assistant_engine.chat_history,
     }
+    
+    if is_verbose:
+        out["verbose_output"] = 'verbose test'
+    
+    return out
