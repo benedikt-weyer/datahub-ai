@@ -84,6 +84,9 @@ def generate_sql_query(question_string, relavent_table_info, reason_for_selectin
         sql_query_4 = extract_value_from_response_string(output.text, 'SQL_Query_4')
         sql_queries.append(sql_query_4)
 
+    # filter queries with empty strings
+    sql_queries = [query for query in sql_queries if query]
+
 
     print(sql_queries)
 
