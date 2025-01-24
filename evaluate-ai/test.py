@@ -150,7 +150,7 @@ def save_result(ratings, filename='ratings.md'):
 questions, expected_answers = read_test_data_from_json("./evaluate-ai/test_data.json")
 
 # create llm
-llm_test = Ollama(base_url='http://openmain.de:11434', model="dolphin-mistral:latest", request_timeout=30.0)
+llm_test = Ollama(base_url='http://openmain.de:11434', model="deepseek-r1:8b", request_timeout=30.0)
 #llm_test = Ollama(base_url='http://localhost:11434', model="dolphin-llama3:latest", request_timeout=220.0)
 
 # check testcases with llm
