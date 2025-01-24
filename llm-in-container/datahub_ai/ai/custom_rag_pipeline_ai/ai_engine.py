@@ -139,12 +139,16 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
         # execute sql queries
         sql_query_results = []
-        with engine.connect() as connection:
-            connection.execute(text("SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY"))
-            for sql_query in sql_queries:
-                result = connection.execute(text(sql_query))
-                query_results = [{column: value for column, value in row.items()} for row in result.mappings()]
-                sql_query_results.append(query_results)
+        for sql_query in sql_queries:
+            try:
+                with engine.connect() as connection:
+                    connection.execute(text("SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY"))
+                    result = connection.execute(text(sql_query))
+                    query_results = [{column: value for column, value in row.items()} for row in result.mappings()]
+                    sql_query_results.append(query_results)
+            except Exception as e:
+                print(f"An error occurred while executing the SQL query: {sql_query}. Error: {e}")
+                sql_query_results.append(f"Error executing query")
 
         print(sql_query_results)
 
