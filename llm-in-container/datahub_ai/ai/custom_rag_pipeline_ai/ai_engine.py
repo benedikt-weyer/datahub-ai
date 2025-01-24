@@ -17,6 +17,8 @@ from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_gener
 
 def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_history=None):
 
+    verbose_output_submit_query = f'## Verbose output ##\n'
+
     print(f'Question: {query_string}')
 
     # Load the .env file
@@ -26,6 +28,8 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     ollama_api_url = os.getenv('OLLAMA_API_URL')
     if override_ollama_api_url is not None:
         ollama_api_url = override_ollama_api_url
+
+    verbose_output_submit_query += f"<b>OLLAMA API URL</b>: {ollama_api_url}\n\n"
 
     print(ollama_api_url)
 
@@ -42,6 +46,12 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     llm_chat_assistent = llm_gemma2
     llm_sql_query_generation = llm_gemma2
     llm_response_synthesizer = llm_deapsek_r1
+
+    verbose_output_submit_query += f"<b>Model for Embedding:</b> {embedding_standard_embedding.model_name}\n"
+    verbose_output_submit_query += f"<b>Model for Table Selector:</b> {llm_table_selector.model}\n"
+    verbose_output_submit_query += f"<b>Model for SQL Generation:</b> {llm_sql_query_generation.model}\n"
+    verbose_output_submit_query += f"<b>Model for Response Synthesis:</b> {llm_response_synthesizer.model}\n"
+    verbose_output_submit_query += f"<b>Model for Chatting:</b> {llm_chat_assistent.model}\n\n"
     
 
     # init chat engine
@@ -77,6 +87,10 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     relevant_table_names = table_selector_response['relavant_tables']
     is_sql_query_necessary = table_selector_response['is_sql_query_necessary']
     reason_for_selecting_those_tables = table_selector_response['reason_for_selecting_those_tables']
+
+    verbose_output_submit_query += f"<b>Relevant Table Names:</b> {relevant_table_names}\n"
+    verbose_output_submit_query += f"<b>Is SQL Query Necessary:</b> {is_sql_query_necessary}\n"
+    verbose_output_submit_query += f"<b>Reason for Selecting Tables:</b> {reason_for_selecting_those_tables}\n\n"
 
 
     if is_sql_query_necessary:
@@ -114,6 +128,8 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
         print(sql_queries)
 
+        verbose_output_submit_query += f"<b>Generated SQL Queries:</b> {sql_queries}\n\n"
+
         if sql_queries is None:
             response = "Sorry, I could not generate a valid SQL query for the given question."
             return {
@@ -132,6 +148,8 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
         print(sql_query_results)
 
+        verbose_output_submit_query += f"<b>SQL Query Results:</b> {sql_query_results}\n\n"
+
         # synthesise response
         response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_queries, relevant_table_infos, llm_response_synthesizer)['synthesized_response']
 
@@ -147,6 +165,6 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     }
     
     if is_verbose:
-        out["verbose_output"] = 'verbose test'
+        out["verbose_output"] = verbose_output_submit_query
     
     return out
