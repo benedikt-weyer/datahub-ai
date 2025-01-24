@@ -30,8 +30,11 @@ def get_datahub_tables_metadata(without_docker_flag=False):
         description = (
         f"This table belongs to the category '{table['category_name']}' and the category key is '{table['category_key']}'. "
         f"The contained information describes {table['name']}, {related}. "
-        f"The information this table provides is {table['description']}, measured in '{table['database_unit']}', "
-        f"and the data coverage is {table['temporal_coverage']}."
+        f"The information this table provides is {table['description']}, measured in '{table['database_unit']}'."
+        f"The temporal coverage is {table['temporal_coverage']}."
+        f"The temporal resolution is {table['temporal_details']}."
+        f"The spatial coverage is {table['spatial_coverage']}."
+        f"The spacial resolution is {table['spatial_details']}."
         )
         table_map[table['key']] = description
         
