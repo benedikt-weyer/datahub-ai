@@ -3,6 +3,7 @@ from llama_index.llms.ollama import Ollama
 import re
 import requests
 import json
+import os
 
 def read_test_data_from_json(path):
     with open(path, 'r') as file:
@@ -147,10 +148,16 @@ def save_result(ratings, filename='ratings.md'):
 #read questions and answers
 #questions = read_file("./evaluate-ai/questions.txt")
 #expected_answers = read_file("./evaluate-ai/expected_answers.txt")
-questions, expected_answers = read_test_data_from_json("./evaluate-ai/test_data.json")
+# Get the directory of the current script
+script_dir = os.path.dirname(__file__)
 
+# Construct the relative path to the JSON file
+json_path = os.path.join(script_dir, "test_data.json")
+
+# Read questions and answers
+questions, expected_answers = read_test_data_from_json(json_path)
 # create llm
-llm_test = Ollama(base_url='http://openmain.de:11434', model="dolphin-mistral:latest", request_timeout=30.0)
+llm_test = Ollama(base_url='http://openmain.de:11434', model="deepseek-r1:8b", request_timeout=30.0)
 #llm_test = Ollama(base_url='http://localhost:11434', model="dolphin-llama3:latest", request_timeout=220.0)
 
 # check testcases with llm
