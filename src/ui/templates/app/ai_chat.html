@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block head %}
 	<style>
@@ -23,20 +24,23 @@
 		.user-message {
 			justify-content: flex-end;
 		}
-		.user-message p {
+		.user-message > .message-inner {
 			background-color: #dcf8c6;
 			color: #333;
 			border-radius: 10px;
-			padding: 10px;
+			padding: 10px 20px;
 			max-width: 60%;
 			text-align: right;
 		}
-		.assistant-message p {
+		.assistant-message > .message-inner {
 			background-color: #f1f0f0;
 			color: #333;
 			border-radius: 10px;
-			padding: 10px;
+			padding: 10px 20px;
 			max-width: 60%;
+		}
+		.message-inner p{
+			margin: 10px 0px;
 		}
 		#input-container {
 			position: fixed;
@@ -137,8 +141,11 @@
 		<button onclick="sendQueryToLLMDirectly()">Send</button>
 	</div>
 
+	<script src="{% static 'js/bower_components/showdown/dist/showdown.min.js' %}"></script>
 	<script>
 		let chatHistory = null;
+
+		const md_converter = new showdown.Converter();
 
 		async function sendQueryToLLMDirectly() {
 			const userInput = document.getElementById("user-input");
@@ -204,12 +211,15 @@
 
 			//format text
 			// Replace newline characters with <br> tags for line breaks
-			let formatedText = text.replace(/(?:\r\n|\r|\n)/g, '<br>');
+			//let formatedText = text.replace(/(?:\r\n|\r|\n)/g, '<br>');
+
+			let converted_text = md_converter.makeHtml(text);
 
 			// Create the text bubble
-			const messageBubble = document.createElement("p");
-			messageBubble.innerHTML = formatedText;
-			console.log(formatedText);
+			const messageBubble = document.createElement("div");
+			messageBubble.className = "message-inner";
+			messageBubble.innerHTML = converted_text;
+			console.log(converted_text);
 
 			// Append elements
 			messageDiv.appendChild(messageBubble);

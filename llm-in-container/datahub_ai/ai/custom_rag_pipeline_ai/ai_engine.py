@@ -50,10 +50,10 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     llm_sql_query_generation = llm_gemma2
     llm_response_synthesizer = llm_deapsek_r1
 
-    verbose_output_submit_query += f"<b>Model for Embedding:</b> {embedding_standard_embedding.model_name}\n"
-    verbose_output_submit_query += f"<b>Model for Table Selector:</b> {llm_table_selector.model}\n"
-    verbose_output_submit_query += f"<b>Model for SQL Generation:</b> {llm_sql_query_generation.model}\n"
-    verbose_output_submit_query += f"<b>Model for Response Synthesis:</b> {llm_response_synthesizer.model}\n"
+    verbose_output_submit_query += fr"<b>Model for Embedding:</b> {embedding_standard_embedding.model_name}<br>"
+    verbose_output_submit_query += fr"<b>Model for Table Selector:</b> {llm_table_selector.model}<br>"
+    verbose_output_submit_query += fr"<b>Model for SQL Generation:</b> {llm_sql_query_generation.model}<br>"
+    verbose_output_submit_query += fr"<b>Model for Response Synthesis:</b> {llm_response_synthesizer.model}<br>"
     verbose_output_submit_query += f"<b>Model for Chatting:</b> {llm_chat_assistent.model}\n\n"
     
 
