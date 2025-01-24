@@ -108,31 +108,32 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
         # generate sql query
         sql_query_generation_response = sql_query_generator.generate_sql_query(query_string, relevant_table_infos, reason_for_selecting_those_tables, llm_sql_query_generation)
-        sql_query = sql_query_generation_response['sql_query']
+        sql_queries = sql_query_generation_response['sql_queries']
 
         print(relevant_table_infos)
 
-        print(sql_query)
+        print(sql_queries)
 
-        if sql_query is None:
+        if sql_queries is None:
             response = "Sorry, I could not generate a valid SQL query for the given question."
             return {
                 "response": response,
                 "chat_history": chat_assistant_engine.chat_history,
             }
 
-        # execute sql query
-        sql_query_results = None
+        # execute sql queries
+        sql_query_results = []
         with engine.connect() as connection:
             connection.execute(text("SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY"))
-            result = connection.execute(text(sql_query))
-            sql_query_results = [{column: value for column, value in row.items()} for row in result.mappings()]
-            
+            for sql_query in sql_queries:
+                result = connection.execute(text(sql_query))
+                query_results = [{column: value for column, value in row.items()} for row in result.mappings()]
+                sql_query_results.append(query_results)
 
         print(sql_query_results)
 
         # synthesise response
-        response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_query, relevant_table_infos, llm_response_synthesizer)['synthesized_response']
+        response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_queries, relevant_table_infos, llm_response_synthesizer)['synthesized_response']
 
 
     else:

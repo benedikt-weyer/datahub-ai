@@ -3,20 +3,19 @@ from llama_index.llms.ollama import Ollama
 
 from datahub_ai.ai.custom_rag_pipeline_ai.utils import extract_value_from_response_string, remove_thinking_from_response_string
 
-def synthesize_response(question_string, sql_query_results, sql_query, relevant_table_infos, response_synthesis_llm: Ollama):
+def synthesize_response(question_string, sql_query_results, sql_queries, relevant_table_infos, response_synthesis_llm: Ollama):
 
     RESPONSE_SYNTHESIS_TMPL = (
-        "Given an input question, synthesize a response from the query results, by answering the users question (listed below) with the sql results listed below. \n"
+        "Given an input question, synthesize a response from the query results by answering the user's question (listed below) with the sql results listed below. \n"
         "Also always mention the queried tables aka the used datasources. \n"
         "\n"
-        "When looking for time and/or spacial coverage of the data you can also use the given table metadescription \n"
-        "When looking for time and/or spacial resoulution of the data you can also use the given table metadescription \n"
+        "When looking for time and/or spatial coverage of the data you can also use the given table metadescription \n"
+        "When looking for time and/or spatial resolution of the data you can also use the given table metadescription \n"
         "\n"
-        "When looking for time and/or spacial resoulution of the data you can also use the given table metadescription \n"
         "\n"
         "Here is the data you need: \n"
         "Question: {question_string}\n"
-        "SQL_Query: {sql_query}\n"
+        "SQL_Queries: {sql_queries}\n"
         "SQL_Query_Results: {sql_query_results}\n"
         "Relevant_Table_Infos: {relevant_table_infos}\n"
         "\n\n"
@@ -26,7 +25,7 @@ def synthesize_response(question_string, sql_query_results, sql_query, relevant_
     )
     
     RESPONSE_SYNTHESIS_PROMPT = PromptTemplate(RESPONSE_SYNTHESIS_TMPL)
-    response_synthesis_prompt_string = RESPONSE_SYNTHESIS_PROMPT.format(question_string=question_string, sql_query_results=sql_query_results, relevant_table_infos=relevant_table_infos, sql_query=sql_query)
+    response_synthesis_prompt_string = RESPONSE_SYNTHESIS_PROMPT.format(question_string=question_string, sql_query_results=sql_query_results, relevant_table_infos=relevant_table_infos, sql_queries=sql_queries)
 
     #print(response_synthesis_prompt_string)
 
