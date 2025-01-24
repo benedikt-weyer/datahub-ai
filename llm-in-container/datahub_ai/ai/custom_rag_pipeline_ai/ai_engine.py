@@ -10,7 +10,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.sql import text
 
 
-from datahub_ai.logic import data_description_logic
+from datahub_ai.logic import data_description_logic, datahub_metadata_logic
 from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_generator, response_synthesizer
 
 
@@ -38,7 +38,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     # init models
     embedding_standard_embedding = embedding_mxbai
-    llm_table_selector = llm_gemma2
+    llm_table_selector = llm_deapsek_r1
     llm_chat_assistent = llm_gemma2
     llm_sql_query_generation = llm_gemma2
     llm_response_synthesizer = llm_deapsek_r1
@@ -51,6 +51,8 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     # get table infos
     table_infos = data_description_logic.get_active_tables(without_docker)
     table_infos_formated = [{'table_name': table.get('table_name'), 'table_description': table.get('table_description')} for table in table_infos]
+
+   
 
     # create database engine
     database_url = f'postgresql://didex:didex@{"localhost" if without_docker else "postgis"}:5432/didex'
@@ -74,6 +76,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     table_selector_response = table_selector.select_important_tables(query_string, table_infos_formated, llm_table_selector)
     relevant_table_names = table_selector_response['relavant_tables']
     is_sql_query_necessary = table_selector_response['is_sql_query_necessary']
+    reason_for_selecting_those_tables = table_selector_response['reason_for_selecting_those_tables']
 
 
     if is_sql_query_necessary:
@@ -94,8 +97,17 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
                 # update relevant_table_infos directly
                 relevant_table_infos[i]['columns'] = columns
 
+        # get table metadata
+        table_metadata = datahub_metadata_logic.get_datahub_tables_metadata(without_docker)
+        #print(table_metadata)
+        # add table metadata to table infos
+        for table_info in relevant_table_infos:
+            table_name = table_info['table_name']
+            if table_metadata.get(table_name) is not None:
+                table_info['metadata'] = table_metadata[table_name]
+
         # generate sql query
-        sql_query_generation_response = sql_query_generator.generate_sql_query(query_string, relevant_table_infos, llm_sql_query_generation)
+        sql_query_generation_response = sql_query_generator.generate_sql_query(query_string, relevant_table_infos, reason_for_selecting_those_tables, llm_sql_query_generation)
         sql_query = sql_query_generation_response['sql_query']
 
         print(relevant_table_infos)
@@ -120,7 +132,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
         print(sql_query_results)
 
         # synthesise response
-        response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_query, llm_response_synthesizer)['synthesized_response']
+        response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_query, relevant_table_infos, llm_response_synthesizer)['synthesized_response']
 
 
     else:

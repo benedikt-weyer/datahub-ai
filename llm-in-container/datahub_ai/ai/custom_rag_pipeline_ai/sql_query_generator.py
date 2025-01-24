@@ -3,7 +3,7 @@ from llama_index.llms.ollama import Ollama
 
 from datahub_ai.ai.custom_rag_pipeline_ai.utils import extract_value_from_response_string
 
-def generate_sql_query(question_string, relavent_table_info, sql_query_generation_llm: Ollama):
+def generate_sql_query(question_string, relavent_table_info, reason_for_selecting_those_tables, sql_query_generation_llm: Ollama):
 
     TEXT_TO_SQL_TMPL = (
         "Given an input question, first create a syntactically correct Postgres SQL statement \n\n"
@@ -22,6 +22,8 @@ def generate_sql_query(question_string, relavent_table_info, sql_query_generatio
         "'id' is not short for 'index'  \n"
         # "When asked for a shape/shapes, make the sql query return the name of the shape/shapes "
 
+        "When asked for if data is available in a given time period, then dont query for all the specific data but instead test if it exists and how many datapoints are there \n"
+
         #"When you want to filter for Countries or Regions or Districts, use shapes_shape and shapes_type and join them on shape_id=id. "
         #"Countries and Regions and Districts are writen in upercase when used in the query. "
         #"Do not use name = 'District' in this table or similar!! "
@@ -37,6 +39,7 @@ def generate_sql_query(question_string, relavent_table_info, sql_query_generatio
         "Here is the data you need: \n"
         "Question: {question_string}\n"
         "Table Info: {relavent_table_info}\n"
+        "Reason_For_Selecting_Those_Tables: {reason_for_selecting_those_tables}\n"
         # """Table Relations: table_name	foreign_key	contraint_def
         # app_user_groups	app_user_groups_group_id_e774d92c_fk_auth_group_id	FOREIGN KEY (group_id) REFERENCES auth_group(id) DEFERRABLE INITIALLY DEFERRED
         # app_user_groups	app_user_groups_user_id_e6f878f6_fk_app_user_id	FOREIGN KEY (user_id) REFERENCES app_user(id) DEFERRABLE INITIALLY DEFERRED
@@ -64,7 +67,7 @@ def generate_sql_query(question_string, relavent_table_info, sql_query_generatio
     )
     
     TEXT_TO_SQL_PROMPT = PromptTemplate(TEXT_TO_SQL_TMPL)
-    text_to_sql_prompt_string = TEXT_TO_SQL_PROMPT.format(question_string=question_string, relavent_table_info=relavent_table_info)
+    text_to_sql_prompt_string = TEXT_TO_SQL_PROMPT.format(question_string=question_string, relavent_table_info=relavent_table_info, reason_for_selecting_those_tables=reason_for_selecting_those_tables)
 
     #print(text_to_sql_prompt_string)
 

@@ -65,7 +65,10 @@ def get_datahub_table_metadata(without_docker = False):
                 COALESCE(rt.related_tables, '') AS related_tables, 
                 dl.description,
                 dl.database_unit,
-                dl.temporal_coverage
+                dl.temporal_coverage,
+                dl.temporal_details,
+                dl.spatial_coverage,
+                dl.spatial_details
             FROM 
                 public.datalayers_datalayer dl
             JOIN 
@@ -83,7 +86,7 @@ def get_datahub_table_metadata(without_docker = False):
     
     final_data = []
     
-    columns_to_keep = ["id", "key", "name", "category_name","category_key", "related_to", "description", "database_unit", "temporal_coverage"]
+    columns_to_keep = ["id", "key", "name", "category_name","category_key", "related_to", "description", "database_unit", "temporal_coverage", "temporal_details", "spatial_coverage", "spatial_details"]
 
     for row in data:
         data = {}
