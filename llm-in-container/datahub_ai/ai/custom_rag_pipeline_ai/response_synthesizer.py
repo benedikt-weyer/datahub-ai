@@ -1,7 +1,7 @@
 from llama_index.core import PromptTemplate
 from llama_index.llms.ollama import Ollama
 
-from datahub_ai.ai.custom_rag_pipeline_ai.utils import extract_value_from_response_string
+from datahub_ai.ai.custom_rag_pipeline_ai.utils import extract_value_from_response_string, remove_thinking_from_response_string
 
 def synthesize_response(question_string, sql_query_results, sql_query, response_synthesis_llm: Ollama):
 
@@ -22,14 +22,15 @@ def synthesize_response(question_string, sql_query_results, sql_query, response_
     RESPONSE_SYNTHESIS_PROMPT = PromptTemplate(RESPONSE_SYNTHESIS_TMPL)
     response_synthesis_prompt_string = RESPONSE_SYNTHESIS_PROMPT.format(question_string=question_string, sql_query_results=sql_query_results, sql_query=sql_query)
 
-    print(response_synthesis_prompt_string)
+    #print(response_synthesis_prompt_string)
 
     output = response_synthesis_llm.complete(response_synthesis_prompt_string)
 
     print(output)
 
     # extract values from response
-    synthesized_response = extract_value_from_response_string(output.text, 'Synthesized_Response')
+    response_without_thinking = remove_thinking_from_response_string(output.text)
+    synthesized_response = extract_value_from_response_string(response_without_thinking, 'Synthesized_Response')
 
 
 

@@ -1,3 +1,5 @@
+import re
+
 def extract_value_from_response_string(response_string, key):
     """
     Extracts the value associated with a specified key from a response string.
@@ -30,3 +32,13 @@ def extract_value_from_response_string(response_string, key):
     value = response_string[key_start + len(key_with_colon):key_end].strip()
     
     return value
+
+
+def remove_thinking_from_response_string(response_string):
+    # Define the pattern to match <think>...</think> tags
+    pattern = re.compile(r'<think>.*?</think>', re.DOTALL)
+
+    # Remove the matched patterns from the response string
+    cleaned_response = re.sub(pattern, '', response_string)
+
+    return cleaned_response.strip()
