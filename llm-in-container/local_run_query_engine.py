@@ -26,15 +26,15 @@ from datahub_ai.ai.custom_rag_pipeline_ai import ai_engine
 
 # print("-------------------")
 
-output = ai_engine.submit_query("I need the location of all schools in Kumasi district, Ghana. Is this dataset available?", is_verbose=True, without_docker=True)
-print("##Response:")
-print(output['response'])
-
-print("-------------------")
-
-# output = ai_engine.submit_query(" I need a quick overview of the Ada East district, Ghana. How large is this district, how many people live there, and what is the most recent urbanization rate?", is_verbose=True, without_docker=True)
+# output = ai_engine.submit_query("I need the location of all schools in Kumasi district, Ghana. Is this dataset available?", is_verbose=True, without_docker=True)
 # print("##Response:")
 # print(output['response'])
 
 # print("-------------------")
+
+output = ai_engine.submit_query("I need a quick overview of the Ada East district, Ghana. How large is this district, how many people live there, and what is the most recent urbanization rate?", is_verbose=True, without_docker=True)
+print("##Response:")
+print(output['response'])
+
+print("-------------------")
 

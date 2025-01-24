@@ -126,8 +126,8 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
         with engine.connect() as connection:
             connection.execute(text("SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY"))
             result = connection.execute(text(sql_query))
-            sql_query_results = [dict(row) for row in result.mappings()]
-            #print(response)
+            sql_query_results = [{column: value for column, value in row.items()} for row in result.mappings()]
+            
 
         print(sql_query_results)
 

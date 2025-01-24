@@ -7,9 +7,11 @@ def synthesize_response(question_string, sql_query_results, sql_query, relevant_
 
     RESPONSE_SYNTHESIS_TMPL = (
         "Given an input question, synthesize a response from the query results, by answering the users question (listed below) with the sql results listed below. \n"
-        "Also always mention the queried tables aka the used datasources. \n\n"
-
-        "When looking for time and/or spacial coverage of the data you can also use the given table metadescriptionm \n"
+        "Also always mention the queried tables aka the used datasources. \n"
+        "\n"
+        "When looking for time and/or spacial coverage of the data you can also use the given table metadescription \n"
+        "When looking for time and/or spacial resoulution of the data you can also use the given table metadescription \n"
+        "\n"
         "When looking for time and/or spacial resoulution of the data you can also use the given table metadescription \n"
         "\n"
         "Here is the data you need: \n"
