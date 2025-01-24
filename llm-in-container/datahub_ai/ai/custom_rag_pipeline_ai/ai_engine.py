@@ -40,7 +40,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     embedding_standard_embedding = embedding_mxbai
     llm_table_selector = llm_gemma2
     llm_chat_assistent = llm_gemma2
-    llm_sql_query_generation = llm_dolphin_llama3
+    llm_sql_query_generation = llm_gemma2
     llm_response_synthesizer = llm_deapsek_r1
     
 
@@ -118,7 +118,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
 
         # synthesise response
-        response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_query, llm_response_synthesizer)
+        response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_query, llm_response_synthesizer)['synthesized_response']
 
 
     else:

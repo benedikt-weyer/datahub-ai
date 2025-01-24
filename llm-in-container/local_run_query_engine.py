@@ -12,6 +12,7 @@ from datahub_ai.ai.custom_rag_pipeline_ai import ai_engine
 
 
 output = ai_engine.submit_query("How was the percipitation in Ashanti in 2020?", is_verbose=True, without_docker=True)
+print("##Response:")
 print(output['response'])
 
 print("-------------------")
