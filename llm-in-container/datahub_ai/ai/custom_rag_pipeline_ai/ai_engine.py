@@ -75,6 +75,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     relevant_table_names = table_selector_response['relavant_tables']
     is_sql_query_necessary = table_selector_response['is_sql_query_necessary']
 
+
     if is_sql_query_necessary:
 
         # get relevant table infos
@@ -116,6 +117,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
             sql_query_results = [dict(row) for row in result.mappings()]
             #print(response)
 
+        print(sql_query_results)
 
         # synthesise response
         response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_query, llm_response_synthesizer)['synthesized_response']

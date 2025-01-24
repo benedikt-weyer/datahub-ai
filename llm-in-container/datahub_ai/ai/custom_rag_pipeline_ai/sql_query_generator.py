@@ -64,11 +64,11 @@ def generate_sql_query(question_string, relavent_table_info, sql_query_generatio
     )
     
     TEXT_TO_SQL_PROMPT = PromptTemplate(TEXT_TO_SQL_TMPL)
-    select_table_prompt_string = TEXT_TO_SQL_PROMPT.format(question_string=question_string, relavent_table_info=relavent_table_info)
+    text_to_sql_prompt_string = TEXT_TO_SQL_PROMPT.format(question_string=question_string, relavent_table_info=relavent_table_info)
 
-    print(select_table_prompt_string)
+    #print(text_to_sql_prompt_string)
 
-    output = sql_query_generation_llm.complete(select_table_prompt_string)
+    output = sql_query_generation_llm.complete(text_to_sql_prompt_string)
 
     print(output)
 

@@ -9,13 +9,32 @@ from datahub_ai.ai.custom_rag_pipeline_ai import ai_engine
 
 #print(response)
 
+#output = ai_engine.submit_query("How are you today?", is_verbose=True, without_docker=True)
+#print(output['response'])
 
 
-output = ai_engine.submit_query("How was the percipitation in Ashanti in 2020?", is_verbose=True, without_docker=True)
+# output = ai_engine.submit_query("How was the percipitation in Ashanti in 2020?", is_verbose=True, without_docker=True)
+# print("##Response:")
+# print(output['response'])
+
+# print("-------------------")
+
+
+output = ai_engine.submit_query("For my research project on malaria, I need precipitation data for the period from January 2020 to December 2023. Are these data available, and in what resolution?", is_verbose=True, without_docker=True)
 print("##Response:")
 print(output['response'])
 
 print("-------------------")
 
-#output = ai_engine.submit_query("How are you today?", is_verbose=True, without_docker=True)
-#print(output['response'])
+# output = ai_engine.submit_query("I need the location of all schools in Kumasi district, Ghana. Is this dataset available?", is_verbose=True, without_docker=True)
+# print("##Response:")
+# print(output['response'])
+
+# print("-------------------")
+
+# output = ai_engine.submit_query(" I need a quick overview of the Ada East district, Ghana. How large is this district, how many people live there, and what is the most recent urbanization rate?", is_verbose=True, without_docker=True)
+# print("##Response:")
+# print(output['response'])
+
+# print("-------------------")
+
