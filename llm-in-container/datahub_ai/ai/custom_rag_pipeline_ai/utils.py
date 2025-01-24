@@ -1,12 +1,13 @@
 import re
 
-def extract_value_from_response_string(response_string, key):
+def extract_value_from_response_string(response_string, key, end_string="\n"):
     """
     Extracts the value associated with a specified key from a response string.
 
     Args:
         response_string (str): The response string to search within.
         key (str): The key whose associated value is to be extracted.
+        end_string (str): The string that marks the end of the value. Defaults to newline.
 
     Returns:
         str: The value associated with the specified key.
@@ -24,7 +25,7 @@ def extract_value_from_response_string(response_string, key):
         raise ValueError(f"Key '{key}' not found in response string.")
     
     # Find the end index of the key in the response string
-    key_end = response_string.find("\n", key_start)
+    key_end = response_string.find(end_string, key_start)
     if key_end == -1:
         key_end = len(response_string)
     

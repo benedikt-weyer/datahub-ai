@@ -20,8 +20,9 @@ def synthesize_response(question_string, sql_query_results, sql_queries, relevan
         "Relevant_Table_Infos: {relevant_table_infos}\n"
         "\n\n"
 
-        "Important!!!: Format your response exactly as stated below, taking one line: \n"
+        "Important!!!: Format your response exactly as stated below: \n"
         "Synthesized_Response: Your response here \n"
+        "[END]"
     )
     
     RESPONSE_SYNTHESIS_PROMPT = PromptTemplate(RESPONSE_SYNTHESIS_TMPL)
@@ -37,7 +38,7 @@ def synthesize_response(question_string, sql_query_results, sql_queries, relevan
     response_without_thinking = remove_thinking_from_response_string(output.text)
 
     try:
-        synthesized_response = extract_value_from_response_string(response_without_thinking, 'Synthesized_Response')
+        synthesized_response = extract_value_from_response_string(response_without_thinking, 'Synthesized_Response', '[END]')
     except Exception as e:
         print(f"Error extracting synthesized response: {e}")
         synthesized_response = response_without_thinking
