@@ -51,7 +51,7 @@ services:
 
   datahub-ai:
     build: 
-      dockerfile: ./llm-in-container/Dockerfile
+      dockerfile: ./datahub_ai/Dockerfile
       context: .
     
     #image: llm-query-engine:latest

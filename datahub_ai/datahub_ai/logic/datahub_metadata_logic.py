@@ -1,12 +1,4 @@
-import sys
-import os
-
-# Add the project root directory to PYTHONPATH
-#sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 from datahub_ai.data_access.datahub_tables_access import get_datahub_table_metadata 
-
-from pprint import pprint as pp
 
 
 def get_datahub_tables_metadata(without_docker_flag=False):
@@ -15,9 +7,7 @@ def get_datahub_tables_metadata(without_docker_flag=False):
 
     table_map = {}
     
-    for table in sorted(datahub_data, key=lambda table: table["id"]):
-        
-        
+    for table in sorted(datahub_data, key=lambda table: table["id"]):        
         
         if table["description"].find("you can find follow up") != -1:
             table["description"] =  'not available'
