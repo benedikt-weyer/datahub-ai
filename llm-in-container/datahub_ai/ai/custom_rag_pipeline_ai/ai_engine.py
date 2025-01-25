@@ -14,7 +14,7 @@ from sqlalchemy.sql import text
 
 
 from datahub_ai.logic import data_description_logic, datahub_metadata_logic
-from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_generator, response_synthesizer
+from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_generator, response_synthesizer, query_preparer
 
 
 
@@ -45,12 +45,14 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     # init models
     embedding_standard_embedding = embedding_mxbai
+    llm_query_preparer = llm_deapsek_r1
     llm_table_selector = llm_deapsek_r1
     llm_chat_assistent = llm_gemma2
     llm_sql_query_generation = llm_gemma2
     llm_response_synthesizer = llm_deapsek_r1
 
     verbose_output_submit_query += fr"<b>Model for Embedding:</b> {embedding_standard_embedding.model_name}<br>"
+    verbose_output_submit_query += fr"<b>Model for Query Preperation:</b> {llm_query_preparer.model}<br>"
     verbose_output_submit_query += fr"<b>Model for Table Selector:</b> {llm_table_selector.model}<br>"
     verbose_output_submit_query += fr"<b>Model for SQL Generation:</b> {llm_sql_query_generation.model}<br>"
     verbose_output_submit_query += fr"<b>Model for Response Synthesis:</b> {llm_response_synthesizer.model}<br>"
@@ -67,6 +69,24 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     )
 
     chat_assistant_engine = SimpleChatEngine.from_defaults(llm=llm_chat_assistent, embedding=embedding_standard_embedding, memory=chat_memory)
+
+
+    # prepare query
+    query_preparer_response = query_preparer.prepare_query(query_string, chat_memory, llm_query_preparer)
+    is_sql_query_necessary_in_general = query_preparer_response['is_sql_query_necessary']
+    refined_question = query_preparer_response['refined_question']
+    language = query_preparer_response['language']
+
+    if not is_sql_query_necessary_in_general:
+        response = chat_assistant_engine.chat(query_string).response
+
+        out = {
+            "response": response,
+            "chat_store": chat_store,
+        }
+        if is_verbose:
+            out["verbose_output"] = verbose_output_submit_query
+        return out
     
 
     # get table infos
@@ -94,7 +114,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
 
     # get relevant tables
-    table_selector_response = table_selector.select_important_tables(query_string, table_infos_formated, llm_table_selector)
+    table_selector_response = table_selector.select_important_tables(refined_question, table_infos_formated, llm_table_selector)
     relevant_table_names = table_selector_response['relavant_tables']
     is_sql_query_necessary = table_selector_response['is_sql_query_necessary']
     reason_for_selecting_those_tables = table_selector_response['reason_for_selecting_those_tables']
@@ -135,7 +155,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
                 table_info['metadata'] = table_metadata[table_name]
 
         # generate sql query
-        sql_query_generation_response = sql_query_generator.generate_sql_query(query_string, relevant_table_infos, reason_for_selecting_those_tables, llm_sql_query_generation)
+        sql_query_generation_response = sql_query_generator.generate_sql_query(refined_question, relevant_table_infos, reason_for_selecting_those_tables, llm_sql_query_generation)
         sql_queries = sql_query_generation_response['sql_queries']
 
         print(relevant_table_infos)
@@ -164,7 +184,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
         verbose_output_submit_query += f"<b>SQL Query Results:</b> {sql_query_results}\n\n"
 
         # synthesise response
-        response = response_synthesizer.synthesize_response(query_string, sql_query_results, sql_queries, relevant_table_infos, llm_response_synthesizer)['synthesized_response']
+        response = response_synthesizer.synthesize_response(refined_question, sql_query_results, sql_queries, relevant_table_infos, language, llm_response_synthesizer)['synthesized_response']
 
         # add response to chat store
         chat_store.add_message("user1", ChatMessage(role="assistant", content=response))
