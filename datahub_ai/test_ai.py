@@ -1,8 +1,5 @@
 import unittest
-from uuid import uuid4
 
-from llama_cloud import ChatMessage, MessageRole
-from llama_index.core.llms import ChatResponse
 from datahub_ai.ai.custom_rag_pipeline_ai.utils import extract_value_from_response_string
 
 class TestAI(unittest.TestCase):
