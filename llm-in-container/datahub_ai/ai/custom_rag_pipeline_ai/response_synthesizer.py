@@ -30,11 +30,11 @@ def synthesize_response(question_string, sql_query_results, sql_queries, relevan
     RESPONSE_SYNTHESIS_PROMPT = PromptTemplate(RESPONSE_SYNTHESIS_TMPL)
     response_synthesis_prompt_string = RESPONSE_SYNTHESIS_PROMPT.format(question_string=question_string, sql_query_results=sql_query_results, relevant_table_infos=relevant_table_infos, sql_queries=sql_queries)
 
-    #print(response_synthesis_prompt_string)
+    print(response_synthesis_prompt_string, flush=True)
 
     output = response_synthesis_llm.complete(response_synthesis_prompt_string)
 
-    print(output)
+    print(output, flush=True)
 
     # extract values from response
     response_without_thinking = remove_thinking_from_response_string(output.text)
@@ -43,7 +43,7 @@ def synthesize_response(question_string, sql_query_results, sql_queries, relevan
         synthesized_response = extract_value_from_response_string(response_without_thinking, 'Synthesized_Response', '[END]')
     except Exception as e:
         print(f"Error extracting synthesized response: {e}")
-        synthesized_response = response_without_thinking
+        synthesized_response = response_without_thinking.replace('[END]', '')
 
 
 
