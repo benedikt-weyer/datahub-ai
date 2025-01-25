@@ -184,7 +184,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
         verbose_output_submit_query += f"<b>SQL Query Results:</b> {sql_query_results}\n\n"
 
         # synthesise response
-        response = response_synthesizer.synthesize_response(refined_question, sql_query_results, sql_queries, relevant_table_infos, language, llm_response_synthesizer)['synthesized_response']
+        response = response_synthesizer.synthesize_response(refined_question, sql_query_results, sql_queries, relevant_table_infos, llm_response_synthesizer)['synthesized_response']
 
         # add response to chat store
         chat_store.add_message("user1", ChatMessage(role="assistant", content=response))
