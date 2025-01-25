@@ -5,14 +5,10 @@ llama-index-llms-ollama
 llama-index-embeddings-ollama
 llama-index
 sqlite-utils
-ipython
 psycopg2-binary
 rich
 networkx
 flask-cors
 python-dotenv
 pyvis
-
-arize-phoenix
-llama-index-callbacks-arize-phoenix
 pymongo
