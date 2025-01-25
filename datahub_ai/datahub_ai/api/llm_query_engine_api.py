@@ -1,7 +1,7 @@
 import json
 
-from flask import Flask, request, jsonify, Response
-from flask_cors import CORS, cross_origin
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from bson import json_util
 
 from llama_index.core.storage.chat_store import SimpleChatStore
@@ -50,14 +50,7 @@ def query_post():
 
 @app.route('/api/data-description/inactive-table-names', methods=['GET'])
 def data_description_inactive_table_names_get():
-    # Access the query parameter from the URL
-    #query_string = request.args.get("query")
-
-    #if not query_string:
-    #    return jsonify({"error": "Missing 'query' parameter"}), 400
-
-    # Create a response using the query string
-    #response = f'You just submitted the query: {query_string}'
+    
     inactive_table_names = data_description_logic.get_inactive_table_names()
 
     # Return the JSON response

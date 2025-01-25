@@ -1,10 +1,5 @@
-import requests as r
 from sqlalchemy import create_engine, inspect, text
 from sqlalchemy.orm import sessionmaker as sm
-import pandas as pd
-import json as j
-import pprint as pp
-
 
 
 

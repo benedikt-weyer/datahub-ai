@@ -4,7 +4,6 @@ import os
 from llama_index.llms.ollama import Ollama
 from llama_index.core.chat_engine import SimpleChatEngine
 from llama_index.embeddings.ollama import OllamaEmbedding
-from llama_index.core import PromptTemplate
 from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.base.llms.types import ChatMessage
@@ -99,19 +98,6 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     database_url = f'postgresql://didex:didex@{"localhost" if without_docker else "postgis"}:5432/didex'
     engine = create_engine(database_url)
 
-    # get the column info for the relevant tables
-    # with engine.connect() as connection:
-    #     for i, table_info in enumerate(table_infos_formated):
-    #         table_name = table_info['table_name']
-
-    #         query = f"SELECT column_name, data_type FROM information_schema.columns WHERE table_name = '{table_name}' AND table_schema = 'public'"
-
-
-    #         result = connection.execute(text(query))
-    #         columns = [{'column_name': row[0], 'data_type': row[1]} for row in result]
-    #         # update relevant_table_infos directly
-    #         table_infos_formated[i]['columns'] = columns
-
 
     # get relevant tables
     table_selector_response = table_selector.select_important_tables(refined_question, table_infos_formated, llm_table_selector)
@@ -184,7 +170,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
         verbose_output_submit_query += f"<b>SQL Query Results:</b> {sql_query_results}\n\n"
 
         # synthesise response
-        response = response_synthesizer.synthesize_response(refined_question, sql_query_results, sql_queries, relevant_table_infos, language, llm_response_synthesizer)['synthesized_response']
+        response = response_synthesizer.synthesize_response(refined_question, sql_query_results, sql_queries, relevant_table_infos, llm_response_synthesizer)['synthesized_response']
 
         # add response to chat store
         chat_store.add_message("user1", ChatMessage(role="assistant", content=response))

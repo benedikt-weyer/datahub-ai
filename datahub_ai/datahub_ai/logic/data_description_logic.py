@@ -22,15 +22,6 @@ def get_active_tables(without_docker=False):
     return active_tables
 
 
-# def get_active_tables_for_ai():
-#     # get all active tables from mongo db
-#     active_tables = data_description_access.get_active_tables()
-
-#     #format them for AI
-#     active_tables = [{"table_name": table['table_name'], "table_description": table['table_description']} for table in active_tables]
-
-#     return active_tables
-
 
 def add_table_without_description(table_name):
     # add table to active tables without description
