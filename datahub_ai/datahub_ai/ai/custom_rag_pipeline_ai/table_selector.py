@@ -7,12 +7,14 @@ def select_important_tables(query_string, table_info, table_selector_llm: Ollama
 
     SELECT_TABLE_TMPL = (
         "Instructions: \n"
+        "An SQL Query is NOT necessary when the request/question has no question in it (just statements) Important!!!!!!!! \n"
+
         "Select 0 to 4 tables that should be used in a sql query to answer the provided question \n"
         "Please also evaluate if an sql query is in general necessary to answer the question, because we want to avoid making unnecessary requests \n"
-        "An SQL Query is NOT necessary when the request/question has no question in it (just statements) Important!!! \n"
-        "The question can maybe be answered just with the help of the provided table metadescription, so please evaluate this carefully \n"
+        # "The question can maybe be answered just with the help of the provided table metadescription, so please evaluate this carefully \n"
         "When you select at least one table, then also provide a reason for selecting those tables \n"
-        "You can include the queried results. \n"
+        "The tables are not provided by the user, but represent the available tables in the database \n"
+        # "You can include the queried results. \n"
         # "When looking for time and/or spatial coverage of the data, you can also use the table metadescription, so you don't need an sql query \n"
         # "When looking for time and/or spatial resolution of the data, you can also use the table metadescription, so you don't need an sql query \n"
         "\n\n"

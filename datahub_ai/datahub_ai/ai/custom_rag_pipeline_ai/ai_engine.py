@@ -71,37 +71,39 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     chat_assistant_engine = SimpleChatEngine.from_defaults(llm=llm_chat_assistent, embedding=embedding_standard_embedding, memory=chat_memory)
 
-
+    is_sql_query_necessary_in_general = True
     # prepare query
-    if not chat_store_was_none: # needed because llm does not always return the original question if chat store is empty TODO: fix this in the llm
-        query_preparer_response = query_preparer.prepare_query(query_string, chat_memory, llm_query_preparer)
-        #is_sql_query_necessary_in_general = query_preparer_response['is_sql_query_necessary']
-        language = query_preparer_response['language']
-        refined_question = query_preparer_response['refined_question']
-    
-    
-        prepare_query_prompt_string = query_preparer_response['prepare_query_prompt_string']
-        output = query_preparer_response['output']
-
-        # verbose_output_submit_query += f"<b>Prepare Query Prompt String:</b> {prepare_query_prompt_string}\n"
-        # verbose_output_submit_query += f"<b>Output:</b> {output}\n"
-        verbose_output_submit_query += f"<b>Language of original Question:</b> {language}<br>"
-        verbose_output_submit_query += f"<b>Refined Question:</b> {refined_question}\n\n"
-
-    else:
+    # if not chat_store_was_none: # needed because llm does not always return the original question if chat store is empty TODO: fix this in the llm
+    query_preparer_response = query_preparer.prepare_query(query_string, chat_memory, llm_query_preparer)
+    is_sql_query_necessary_in_general = query_preparer_response['is_sql_query_necessary']
+    language = query_preparer_response['language']
+    if chat_store_was_none and language == 'English':
         refined_question = query_string
+    else:
+        refined_question = query_preparer_response['refined_question']
 
 
-    # if not is_sql_query_necessary_in_general:
-    #     response = chat_assistant_engine.chat(query_string).response
+    prepare_query_prompt_string = query_preparer_response['prepare_query_prompt_string']
+    output = query_preparer_response['output']
 
-    #     out = {
-    #         "response": response,
-    #         "chat_store": chat_store,
-    #     }
-    #     if is_verbose:
-    #         out["verbose_output"] = verbose_output_submit_query
-    #     return out
+    # verbose_output_submit_query += f"<b>Prepare Query Prompt String:</b> {prepare_query_prompt_string}\n"
+    # verbose_output_submit_query += f"<b>Output:</b> {output}\n"
+    verbose_output_submit_query += f"<b>Language of original Question:</b> {language}<br>"
+    verbose_output_submit_query += f"<b>Refined Question:</b> {refined_question}\n\n"
+
+    
+
+
+    if not is_sql_query_necessary_in_general:
+        response = chat_assistant_engine.chat(query_string).response
+
+        out = {
+            "response": response,
+            "chat_store": chat_store,
+        }
+        if is_verbose:
+            out["verbose_output"] = verbose_output_submit_query
+        return out
     
 
     # get table infos
@@ -194,7 +196,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
         response = response_synthesizer.synthesize_response(refined_question, sql_query_results, sql_queries, relevant_table_infos, llm_response_synthesizer)['synthesized_response']
 
         # add response to chat store
-        chat_store.add_message("user1", ChatMessage(role="assistant", content=response))
+        #chat_store.add_message("user1", ChatMessage(role="assistant", content=response))
 
 
     else:
