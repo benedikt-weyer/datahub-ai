@@ -9,6 +9,7 @@ def select_important_tables(query_string, table_info, table_selector_llm: Ollama
         "Instructions: \n"
         "Select 0 to 4 tables that should be used in a sql query to answer the provided question \n"
         "Please also evaluate if an sql query is in general necessary to answer the question, because we want to avoid making unnecessary requests \n"
+        "An SQL Query is NOT necessary when the request/question has no question in it (just statements) Important!!! \n"
         "The question can maybe be answered just with the help of the provided table metadescription, so please evaluate this carefully \n"
         "When you select at least one table, then also provide a reason for selecting those tables \n"
         "You can include the queried results. \n"
