@@ -13,7 +13,7 @@ from sqlalchemy.sql import text
 
 
 from datahub_ai.logic import data_description_logic, datahub_metadata_logic
-from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_generator, response_synthesizer, query_preparer
+from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_generator, response_synthesizer, query_preparer, link_hydration
 
 
 
@@ -36,8 +36,8 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     print(ollama_api_url)
 
     # set the models to use
-    llm_gemma2 = Ollama(base_url=ollama_api_url, model='gemma2:9b', request_timeout=60.0)
-    llm_deapsek_r1 = Ollama(base_url=ollama_api_url, model='deepseek-r1:8b', request_timeout=60.0)
+    llm_gemma2 = Ollama(base_url=ollama_api_url, model='gemma2:9b', request_timeout=60.0, temperature=0.1)
+    llm_deapsek_r1 = Ollama(base_url=ollama_api_url, model='deepseek-r1:8b', request_timeout=60.0, temperature=0.1)
     llm_sqlcoder = Ollama(base_url=ollama_api_url, model='sqlcoder:7b', request_timeout=60.0)
     llm_dolphin_llama3 = Ollama(base_url=ollama_api_url, model='dolphin-llama3:8b', request_timeout=60.0)
     embedding_mxbai= OllamaEmbedding(base_url=ollama_api_url, model_name='mxbai-embed-large:latest', request_timeout=60.0)
@@ -59,7 +59,9 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     
 
     # init chat engine
+    chat_store_was_none = False
     if chat_store is None:
+        chat_store_was_none = True
         chat_store = SimpleChatStore()
     
     chat_memory = ChatMemoryBuffer.from_defaults(
@@ -72,25 +74,35 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     # prepare query
     query_preparer_response = query_preparer.prepare_query(query_string, chat_memory, llm_query_preparer)
-    is_sql_query_necessary_in_general = query_preparer_response['is_sql_query_necessary']
-    refined_question = query_preparer_response['refined_question']
+    #is_sql_query_necessary_in_general = query_preparer_response['is_sql_query_necessary']
     language = query_preparer_response['language']
+    refined_question = query_string if chat_store_was_none and language == 'English' else query_preparer_response['refined_question'] # needed because llm does not always return the original question if chat store is empty TODO
+    
+    
+    prepare_query_prompt_string = query_preparer_response['prepare_query_prompt_string']
+    output = query_preparer_response['output']
 
-    if not is_sql_query_necessary_in_general:
-        response = chat_assistant_engine.chat(query_string).response
+    # verbose_output_submit_query += f"<b>Prepare Query Prompt String:</b> {prepare_query_prompt_string}\n"
+    # verbose_output_submit_query += f"<b>Output:</b> {output}\n"
+    verbose_output_submit_query += f"<b>Language of original Question:</b> {language}<br>"
+    verbose_output_submit_query += f"<b>Refined Question:</b> {refined_question}\n\n"
 
-        out = {
-            "response": response,
-            "chat_store": chat_store,
-        }
-        if is_verbose:
-            out["verbose_output"] = verbose_output_submit_query
-        return out
+    # if not is_sql_query_necessary_in_general:
+    #     response = chat_assistant_engine.chat(query_string).response
+
+    #     out = {
+    #         "response": response,
+    #         "chat_store": chat_store,
+    #     }
+    #     if is_verbose:
+    #         out["verbose_output"] = verbose_output_submit_query
+    #     return out
     
 
     # get table infos
     table_infos = data_description_logic.get_active_tables(without_docker)
     table_infos_formated = [{'table_name': table.get('table_name'), 'table_description': table.get('table_description')} for table in table_infos]
+    table_names = [table_info['table_name'] for table_info in table_infos_formated]
 
    
 
@@ -104,9 +116,13 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     relevant_table_names = table_selector_response['relavant_tables']
     is_sql_query_necessary = table_selector_response['is_sql_query_necessary']
     reason_for_selecting_those_tables = table_selector_response['reason_for_selecting_those_tables']
+    select_table_prompt_string = table_selector_response['select_table_prompt_string']
+    output = table_selector_response['output']
 
-    verbose_output_submit_query += f"<b>Relevant Table Names:</b> {relevant_table_names}\n"
-    verbose_output_submit_query += f"<b>Is SQL Query Necessary:</b> {is_sql_query_necessary}\n"
+    # verbose_output_submit_query += f"<b>Select Table Prompt String:</b> {select_table_prompt_string}\n"
+    # verbose_output_submit_query += f"<b>Output:</b> {output}\n"
+    verbose_output_submit_query += f"<b>Relevant Table Names:</b> {relevant_table_names}<br>"
+    verbose_output_submit_query += f"<b>Is SQL Query Necessary:</b> {is_sql_query_necessary}<br>"
     verbose_output_submit_query += f"<b>Reason for Selecting Tables:</b> {reason_for_selecting_those_tables}\n\n"
 
 
@@ -148,7 +164,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
         print(sql_queries)
 
-        verbose_output_submit_query += "### Generated SQL Queries:\n"
+        verbose_output_submit_query += "\n#### Generated SQL Queries:\n"
         for i, sql_query in enumerate(sql_queries, start=1):
             verbose_output_submit_query += f"**{i}.** `{sql_query}`\n\n"
 
@@ -179,6 +195,10 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     else:
         response = chat_assistant_engine.chat(query_string).response
             
+
+
+    # link hydration for the response
+    response = link_hydration.hydrate_response_with_datalayer_url(response, table_names)
 
 
     out = {
