@@ -91,6 +91,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     # get table infos
     table_infos = data_description_logic.get_active_tables(without_docker)
     table_infos_formated = [{'table_name': table.get('table_name'), 'table_description': table.get('table_description')} for table in table_infos]
+    table_names = [table_info['table_name'] for table_info in table_infos_formated]
 
    
 
@@ -179,6 +180,10 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     else:
         response = chat_assistant_engine.chat(query_string).response
             
+
+
+    # link hydration for the response
+    response = link_hydration.hydrate_response_with_datalayer_url(response, table_names)
 
 
     out = {
