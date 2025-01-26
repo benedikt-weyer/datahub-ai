@@ -7,18 +7,19 @@ def prepare_query(query_string, chat_memory, query_preparer_llm: Ollama):
 
     PREPARE_QUERY_TMPL = (
         "Instructions: \n"
-        #"Please also evaluate if an sql query is in general necessary to answer the question. For that assume that every data is available using an sql query. \n"
+        "Please also evaluate if an sql query is in general necessary to answer the Question in the given context. For that assume that every data is available using an sql query including metadata. \n"
+        "An SQL Query is NOT necessary when the request/question has no question in it (just statements) Important!!!!!!!! \n"
         "Please provide the language the question is in \n"
-        "Also refine and enrich the question with the help of the given chat-memory (Only when Chat_Memory is there). This is like the context for the question. Also make it understandable and don't lose any information or context. \n"
-        "When no Chat_Memory is there, then don't refine or alter the question and pass it right to the Refined_Question \n"
+        "Also refine and enrich the question with the help of the given chat-memory. This is like the context for the question. Also make it understandable and don't lose any information or context. \n"
+        #"When no Chat_Memory is there, then don't refine or alter the question and pass it right to the Refined_Question \n"
         "Also convert the question to English if it is not already in English \n"
         "\n\n"
         "## Here is the data you need: \n"
-        "### Question: {query_string}\n"
+        "### Question (take it into consideration!): {query_string}\n"
         "### Chat_Memory: {chat_memory}\n"
         "\n\n"
         "## Format your response exactly as stated below (don't use markdown!): \n"
-        #"Is_SQL_Query_Necessary: true or false \n"
+        "Is_SQL_Query_Necessary: true or false \n"
         "Language: Language the Querstion is in (e.g. German) \n"
         "Refined_Question: The refined and context enriched question \n"
     )
@@ -30,8 +31,8 @@ def prepare_query(query_string, chat_memory, query_preparer_llm: Ollama):
     print(output, flush=True)
 
     # extract values from response
-    #is_sql_query_necessary = extract_value_from_response_string(output.text, 'SQL_Query_Necessary')
-    #is_sql_query_necessary_bool = True if is_sql_query_necessary == 'true' else False
+    is_sql_query_necessary = extract_value_from_response_string(output.text, 'SQL_Query_Necessary')
+    is_sql_query_necessary_bool = True if is_sql_query_necessary == 'true' else False
 
     language = extract_value_from_response_string(output.text, 'Language')
 
@@ -39,7 +40,7 @@ def prepare_query(query_string, chat_memory, query_preparer_llm: Ollama):
 
 
     return {
-        #'is_sql_query_necessary': is_sql_query_necessary_bool,
+        'is_sql_query_necessary': is_sql_query_necessary_bool,
         'language': language,
         'refined_question': refined_question,
 
