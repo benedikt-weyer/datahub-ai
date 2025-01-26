@@ -53,5 +53,8 @@ def select_important_tables(query_string, table_info, table_selector_llm: Ollama
     return {
         'is_sql_query_necessary': is_sql_query_necessary_bool,
         'relavant_tables': selected_tables,
-        'reason_for_selecting_those_tables': reason_for_selecting_those_tables
+        'reason_for_selecting_those_tables': reason_for_selecting_those_tables,
+
+        'select_table_prompt_string': select_table_prompt_string,
+        'output': output
     }

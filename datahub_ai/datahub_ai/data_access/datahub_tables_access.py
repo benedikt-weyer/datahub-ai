@@ -63,7 +63,8 @@ def get_datahub_table_metadata(without_docker = False):
                 dl.temporal_coverage,
                 dl.temporal_details,
                 dl.spatial_coverage,
-                dl.spatial_details
+                dl.spatial_details,
+                dl.license
             FROM 
                 public.datalayers_datalayer dl
             JOIN 
@@ -81,7 +82,7 @@ def get_datahub_table_metadata(without_docker = False):
     
     final_data = []
     
-    columns_to_keep = ["id", "key", "name", "category_name","category_key", "related_to", "description", "database_unit", "temporal_coverage", "temporal_details", "spatial_coverage", "spatial_details"]
+    columns_to_keep = ["id", "key", "name", "category_name","category_key", "related_to", "description", "database_unit", "temporal_coverage", "temporal_details", "spatial_coverage", "spatial_details", "license"]
 
     for row in data:
         data = {}
