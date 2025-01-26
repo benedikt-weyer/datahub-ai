@@ -1,3 +1,5 @@
+import re
+
 
 
 def hydrate_response_with_datalayer_url(response_str, table_names):
@@ -6,6 +8,7 @@ def hydrate_response_with_datalayer_url(response_str, table_names):
     """
     hydrated_response_str = response_str
     for table_name in table_names:
-        hydrated_response_str = hydrated_response_str.replace(table_name, f'<a href="/datalayers/{table_name}/">`{table_name}`</a>')
+        pattern = re.compile(rf'`?{table_name}`?')
+        hydrated_response_str = pattern.sub(f'<a href="/datalayers/{table_name}/" target="_blank">`{table_name}`</a>', hydrated_response_str)
 
     return hydrated_response_str
