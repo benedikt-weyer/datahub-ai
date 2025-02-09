@@ -20,7 +20,7 @@ from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_gener
 dotenv.load_dotenv()
 
 
-def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_store=None, chat_memory=None):
+def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_store=None):
 
     # create verbose output string for the verbose chat mode
     verbose_output_string = f'## Verbose output ##\n'
@@ -57,16 +57,18 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     verbose_output_string += f"<b>Model for Chatting:</b> {llm_chat_assistent.model}\n\n"
     
 
-    # init or set the chat store and chat memory
-    chat_store_was_none = False
-    if chat_store is None:
-        chat_store_was_none = True
+    # init or set the active chat store and chat memory
+    chat_store_user_key = 'user1'
+    active_chat_store = chat_store
+
+    if active_chat_store is None:
         chat_store = SimpleChatStore()
     
     chat_memory = ChatMemoryBuffer.from_defaults(
-        chat_store=chat_store,
-        chat_store_key="user1",
+        chat_store=active_chat_store,
+        chat_store_key=chat_store_user_key
     )
+
 
     chat_assistant_engine = SimpleChatEngine.from_defaults(llm=llm_chat_assistent, embedding=embedding_standard_embedding, memory=chat_memory)
 
@@ -76,7 +78,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     query_preparer_response = query_preparer.prepare_query(query_string, chat_memory, llm_query_preparer)
     is_sql_query_necessary_in_general = query_preparer_response['is_sql_query_necessary']
     language = query_preparer_response['language']
-    if chat_store_was_none and language == 'English':
+    if chat_store is None and language == 'English':
         refined_question = query_string
     else:
         refined_question = query_preparer_response['refined_question']
