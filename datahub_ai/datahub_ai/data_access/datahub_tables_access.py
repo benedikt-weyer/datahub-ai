@@ -21,6 +21,27 @@ def get_table_names(without_docker = False):
 
     return inspector.get_table_names()
 
+def get_column_infos(table_name, without_docker = False):
+    
+    if without_docker:
+        #create database engine without docker url
+        database_url = f'postgresql://didex:didex@localhost:5432/didex'
+        engine = create_engine(database_url)
+        
+    else:
+        #create database engine with docker url
+        database_url = f'postgresql://didex:didex@postgis:5432/didex'
+        engine = create_engine(database_url) 
+    
+    # Get the inspector
+    inspector = inspect(engine)
+    
+    columns = inspector.get_columns(table_name)
+    
+    column_infos = [{'column_name': column['name'], 'data_type': column['type']} for column in columns]
+    
+    return column_infos
+
 
 def get_datahub_table_metadata(without_docker = False):
     
@@ -92,3 +113,25 @@ def get_datahub_table_metadata(without_docker = False):
         final_data.append(data)
     
     return final_data
+
+
+def execute_generated_query(sql_query, without_docker=False):
+    if without_docker:
+        database_url = f'postgresql://didex:didex@localhost:5432/didex'
+        engine = create_engine(database_url)
+        Session = sm(bind=engine)
+    else:
+        database_url = f'postgresql://didex:didex@postgis:5432/didex'
+        engine = create_engine(database_url) 
+        Session = sm(bind=engine) 
+     
+    session = Session()
+
+    # set session to read only
+    session.execute(text("SET SESSION CHARACTERISTICS AS TRANSACTION READ ONLY"))
+
+    # execute and return query
+    result = session.execute(text(sql_query))
+    query_results = [{column: value for column, value in row.items()} for row in result.mappings()]
+    
+    return query_results
