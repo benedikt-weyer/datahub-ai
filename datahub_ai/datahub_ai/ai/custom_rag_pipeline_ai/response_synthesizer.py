@@ -8,7 +8,7 @@ def synthesize_response(question_string, sql_query_results, sql_queries, relevan
     RESPONSE_SYNTHESIS_TMPL = (
         "Given an input question, synthesize a response from the query results by answering the user's question (listed below) with the sql results listed below. \n"
         "Link the given sql query with the given sql query results and present interesting information in the Synthesized_Response (e.g. How many datapoints where found). \n"
-        "Also always mention the queried tables aka the used datasources. \n"
+        "Also always mention the queried tables aka the used datasources and their licence. \n"
         "\n"
         "When it feels right you can add some information from your own knowledge, but alway explicitly declare it as your own knowledge. \n"
         "\n"
