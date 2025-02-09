@@ -22,8 +22,6 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     # create verbose output string for the verbose chat mode
     verbose_output_string = f'## Verbose output ##\n'
 
-    print(f'Question: {query_string}')
-
     # Load the .env file
     dotenv.load_dotenv()
 
@@ -33,8 +31,6 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
         ollama_api_url = override_ollama_api_url
 
     verbose_output_string += f"<b>OLLAMA API URL</b>: {ollama_api_url}\n\n"
-
-    print(ollama_api_url)
 
     # set the models to use
     llm_gemma2 = Ollama(base_url=ollama_api_url, model='gemma2:9b', request_timeout=60.0, temperature=0.1)
@@ -168,9 +164,6 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
         sql_query_generation_response = sql_query_generator.generate_sql_query(refined_question, relevant_table_infos, reason_for_selecting_those_tables, llm_sql_query_generation)
         sql_queries = sql_query_generation_response['sql_queries']
 
-        print(relevant_table_infos)
-
-        print(sql_queries)
 
         verbose_output_string += "\n#### Generated SQL Queries:\n"
         for i, sql_query in enumerate(sql_queries, start=1):
@@ -189,7 +182,6 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
                 print(f"An error occurred while executing the SQL query: {sql_query}. Error: {e}")
                 sql_query_results.append(f"Error executing query")
 
-        print(sql_query_results)
 
         verbose_output_string += f"<b>SQL Query Results:</b> {sql_query_results}\n\n"
 
