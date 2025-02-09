@@ -25,23 +25,22 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     # create verbose output string for the verbose chat mode
     verbose_output_string = f'## Verbose output ##\n'
 
-    
-
     # set ollama api url
     ollama_api_url = os.getenv('OLLAMA_API_URL')
     if override_ollama_api_url is not None:
         ollama_api_url = override_ollama_api_url
 
+    # add ollama api url to the verbose output
     verbose_output_string += f"<b>OLLAMA API URL</b>: {ollama_api_url}\n\n"
 
-    # set the models to use
+    # initialize the models to use
     llm_gemma2 = Ollama(base_url=ollama_api_url, model='gemma2:9b', request_timeout=60.0, temperature=0.1)
     llm_deapsek_r1 = Ollama(base_url=ollama_api_url, model='deepseek-r1:8b', request_timeout=60.0, temperature=0.1)
     llm_sqlcoder = Ollama(base_url=ollama_api_url, model='sqlcoder:7b', request_timeout=60.0)
     llm_dolphin_llama3 = Ollama(base_url=ollama_api_url, model='dolphin-llama3:8b', request_timeout=60.0)
-    embedding_mxbai= OllamaEmbedding(base_url=ollama_api_url, model_name='mxbai-embed-large:latest', request_timeout=60.0)
+    embedding_mxbai = OllamaEmbedding(base_url=ollama_api_url, model_name='mxbai-embed-large:latest', request_timeout=60.0)
 
-    # init models
+    # set the models to use
     embedding_standard_embedding = embedding_mxbai
     llm_query_preparer = llm_deapsek_r1
     llm_table_selector = llm_deapsek_r1
@@ -49,6 +48,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     llm_sql_query_generation = llm_gemma2
     llm_response_synthesizer = llm_deapsek_r1
 
+    # add the used ai models to the verbose output
     verbose_output_string += fr"<b>Model for Embedding:</b> {embedding_standard_embedding.model_name}<br>"
     verbose_output_string += fr"<b>Model for Query Preperation:</b> {llm_query_preparer.model}<br>"
     verbose_output_string += fr"<b>Model for Table Selector:</b> {llm_table_selector.model}<br>"
@@ -57,7 +57,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     verbose_output_string += f"<b>Model for Chatting:</b> {llm_chat_assistent.model}\n\n"
     
 
-    # init chat engine
+    # init or set the chat store and chat memory
     chat_store_was_none = False
     if chat_store is None:
         chat_store_was_none = True
