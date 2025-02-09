@@ -16,14 +16,16 @@ from datahub_ai.logic import data_description_logic, datahub_metadata_logic
 from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_generator, response_synthesizer, query_preparer, link_hydration
 
 
+# Load the .env file on module import
+dotenv.load_dotenv()
+
 
 def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_store=None, chat_memory=None):
 
     # create verbose output string for the verbose chat mode
     verbose_output_string = f'## Verbose output ##\n'
 
-    # Load the .env file
-    dotenv.load_dotenv()
+    
 
     # set ollama api url
     ollama_api_url = os.getenv('OLLAMA_API_URL')
