@@ -19,7 +19,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdat
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     ports: 
       - '5432:5432'
 
@@ -92,3 +92,4 @@ volumes:
   ollama:
   pgadmin-data:
   mongo:
+  pgdata:
