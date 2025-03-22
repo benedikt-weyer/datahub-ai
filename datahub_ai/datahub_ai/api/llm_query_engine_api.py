@@ -11,7 +11,7 @@ from datahub_ai.logic import data_description_logic, query_logic
 
 
 
-# Initialize the Flask application and the LLMQueryEngine instance
+# Initialize the Flask application with the module name
 app = Flask(__name__)
 
 CORS(app,resources={r"/api/*": {"origins": ["http://localhost:8000"]}})
