@@ -23,7 +23,7 @@ dotenv.load_dotenv()
 def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_store=None):
 
     # create verbose output string for the verbose chat mode
-    verbose_output_string = f'## Verbose output ##\n'
+    verbose_output_string = '## Verbose output ##\n'
 
     # set ollama api url
     ollama_api_url = os.getenv('OLLAMA_API_URL')
@@ -55,7 +55,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     verbose_output_string += fr"<b>Model for SQL Generation:</b> {llm_sql_query_generation.model}<br>"
     verbose_output_string += fr"<b>Model for Response Synthesis:</b> {llm_response_synthesizer.model}<br>"
     verbose_output_string += f"<b>Model for Chatting:</b> {llm_chat_assistent.model}\n\n"
-    
+
 
     # init or set the active chat store and chat memory
     chat_store_user_key = 'user1'
@@ -63,7 +63,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     if active_chat_store is None:
         active_chat_store = SimpleChatStore()
-    
+
     chat_memory = ChatMemoryBuffer.from_defaults(
         chat_store=active_chat_store,
         chat_store_key=chat_store_user_key
@@ -91,14 +91,14 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     else:
         refined_question = query_preparer_response['refined_question']
 
-    
+
     # add query preparer response to the verbose output
     verbose_output_string += f"<b>Prepare Query Prompt String:</b> {prepare_query_prompt_string}\n"
     verbose_output_string += f"<b>Prepare Query LLM Output:</b> {prepare_query_llm_output}\n\n"
     verbose_output_string += f"<b>Language of original Question:</b> {language}<br>"
     verbose_output_string += f"<b>Refined Question:</b> {refined_question}\n\n"
 
-    
+
 
     # ----------------- Simple Chat Assistant + Return ----------------- #
     # if the sql query is not necessary in general, the chat assistant can answer the question
@@ -114,7 +114,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
             out["verbose_output"] = verbose_output_string
 
         return out
-    
+
     # ----------------- Table Selector Agent ----------------- #
 
     # get table infos from the active tables
@@ -156,7 +156,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
             out["verbose_output"] = verbose_output_string
 
         return out
-    
+
 
     # ----------------- SQL Query Generator ----------------- #
 
@@ -172,7 +172,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     for table_info in relevant_table_infos:
         table_name = table_info['table_name']
         table_info['columns'] = column_info[table_name]
-    
+
 
     # get table metadata from datahub
     table_metadata = datahub_metadata_logic.get_datahub_tables_metadata(without_docker)
@@ -225,20 +225,20 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
     # add response to chat store
     active_chat_store.add_message(chat_store_user_key, ChatMessage(role="assistant", content=response))
-        
+
 
 
     # link hydration for the response with the datalayer url
     response = link_hydration.hydrate_response_with_datalayer_url(response, table_names)
 
-    
+
     # return the response and the chat store (and the verbose output if is_verbose is True)
     out = {
         "response": response,
         "chat_store": active_chat_store,
     }
-    
+
     if is_verbose:
         out["verbose_output"] = verbose_output_string
-    
+
     return out
