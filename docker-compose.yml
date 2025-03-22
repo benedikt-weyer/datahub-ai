@@ -1,6 +1,6 @@
 services:
   datahub:
-    image: ghcr.io/datasnack/datahub:latest
+    image: ghcr.io/datasnack/datahub:0.6.1
     env_file:
       - .env
     ports:
@@ -20,7 +20,7 @@ services:
       PGDATA: /var/lib/postgresql/data/pgdat
     volumes:
       - pgdata:/var/lib/postgresql/data
-    ports: 
+    ports:
       - '5432:5432'
 
   pgadmin:
@@ -50,10 +50,10 @@ services:
     #           capabilities: [gpu]
 
   datahub-ai:
-    build: 
+    build:
       dockerfile: ./datahub_ai/Dockerfile
       context: .
-    
+
     #image: llm-query-engine:latest
     restart: always
     ports:
@@ -61,7 +61,7 @@ services:
     depends_on:
       - postgis
       - ollama
-    # used when wanting to connect to (kubernetes) proxy running on local machine 
+    # used when wanting to connect to (kubernetes) proxy running on local machine
     #extra_hosts:
     #  - "host.docker.internal:host-gateway"
 
@@ -74,7 +74,7 @@ services:
       MONGO_INITDB_DATABASE: datahub_ai
     ports:
       - 27017:27017
-    volumes: 
+    volumes:
       - mongo:/data/db
 
   mongo-express:
