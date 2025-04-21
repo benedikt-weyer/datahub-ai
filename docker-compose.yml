@@ -40,15 +40,15 @@ services:
     volumes:
       - ollama:/root/.ollama
     restart: unless-stopped
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #       - driver: cdi
-    #         capabilities:
-    #           - gpu
-    #         device_ids:
-    #         - nvidia.com/gpu=all
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: cdi
+            capabilities:
+              - gpu
+            device_ids:
+            - nvidia.com/gpu=all
 
   datahub-ai:
     build:
