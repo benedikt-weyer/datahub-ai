@@ -16,7 +16,7 @@ from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_gener
 dotenv.load_dotenv()
 
 
-def submit_query(query_string, is_verbose=False, without_docker=False, override_ollama_api_url=None, chat_store=None):
+def submit_query(query_string, is_verbose=False, override_ollama_api_url=None, chat_store=None):
 
     # create verbose output string for the verbose chat mode
     verbose_output_string = '## Verbose output ##\n'
