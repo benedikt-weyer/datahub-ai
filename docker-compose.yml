@@ -62,9 +62,12 @@ services:
       context: .
     restart: unless-stopped
     environment:
-      DATAHUB_URL: ${DATAHUB_URL}
-      DATAHUB_USERNAME: ${DATAHUB_USERNAME}
-      DATAHUB_PASSWORD: ${DATAHUB_PASSWORD}
+      DATAHUB_DB_USERNAME: ${DB_USER}
+      DATAHUB_DB_PASSWORD: ${DB_PASSWORD}
+      DATAHUB_DB_HOST: ${DB_HOST}
+      DATAHUB_DB_PORT: ${DB_PORT}
+      DATAHUB_DB_NAME: ${DB_NAME}
+
       MONGODB_URL: ${MONGODB_URL}
       MONGODB_HOST: ${MONGODB_HOST}
       MONGODB_PORT: ${MONGODB_PORT}
