@@ -8,10 +8,6 @@ from llama_index.core.storage.chat_store import SimpleChatStore
 from llama_index.core.memory import ChatMemoryBuffer
 from llama_index.core.base.llms.types import ChatMessage
 
-from sqlalchemy import create_engine
-from sqlalchemy.sql import text
-
-
 from datahub_ai.logic import data_description_logic, datahub_metadata_logic, ai_query_execution
 from datahub_ai.ai.custom_rag_pipeline_ai import table_selector, sql_query_generator, response_synthesizer, query_preparer, link_hydration
 
