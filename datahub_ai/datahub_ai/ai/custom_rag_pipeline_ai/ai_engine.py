@@ -162,7 +162,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     relevant_table_names_proved = [table_info['table_name'] for table_info in relevant_table_infos]
 
     # get the column info for the relevant tables
-    column_info = datahub_metadata_logic.get_column_info_from_tables(relevant_table_names_proved, without_docker=without_docker)
+    column_info = datahub_metadata_logic.get_column_info_from_tables(relevant_table_names_proved)
 
     # add the column info to the relevant table infos
     for table_info in relevant_table_infos:
@@ -171,7 +171,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
 
     # get table metadata from datahub
-    table_metadata = datahub_metadata_logic.get_datahub_tables_metadata(without_docker)
+    table_metadata = datahub_metadata_logic.get_datahub_tables_metadata()
 
     # add table metadata to table infos
     for table_info in relevant_table_infos:
