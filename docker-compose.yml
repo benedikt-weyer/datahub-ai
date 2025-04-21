@@ -61,6 +61,16 @@ services:
       dockerfile: ./datahub_ai/Dockerfile
       context: .
     restart: unless-stopped
+    environment:
+      RUNNING_IN_DOCKER: true
+      DATAHUB_URL: ${DATAHUB_URL}
+      DATAHUB_USERNAME: ${DATAHUB_USERNAME}
+      DATAHUB_PASSWORD: ${DATAHUB_PASSWORD}
+      MONGODB_URL: ${MONGODB_URL}
+      MONGODB_HOST: ${MONGODB_HOST}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MONGODB_USERNAME: ${MONGODB_ADMIN_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
     ports:
       - "8001:8001"
     depends_on:
