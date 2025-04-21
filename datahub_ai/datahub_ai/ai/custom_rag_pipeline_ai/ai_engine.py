@@ -114,7 +114,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     # ----------------- Table Selector Agent ----------------- #
 
     # get table infos from the active tables
-    table_infos = data_description_logic.get_active_tables(without_docker)
+    table_infos = data_description_logic.get_active_tables()
     # filter out the _id information
     table_infos_formated = [{'table_name': table.get('table_name'), 'table_description': table.get('table_description')} for table in table_infos]
     # get the table names
