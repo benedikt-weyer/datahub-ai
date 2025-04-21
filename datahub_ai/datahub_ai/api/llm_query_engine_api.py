@@ -16,15 +16,6 @@ import os
 app = Flask(__name__)
 
 
-# Check if the application is running in Docker
-is_running_in_docker = os.environ.get('RUNNING_IN_DOCKER', 'false').lower() == 'true'
-
-if is_running_in_docker:
-    print("Running in Docker")
-else:
-    print("Not running in Docker")
-
-
 # enable cors for all api calls from django
 CORS(app, resources={"/api/*": {"origins": ["http://localhost:8000"]}})
 
