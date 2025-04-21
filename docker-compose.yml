@@ -62,7 +62,6 @@ services:
       context: .
     restart: unless-stopped
     environment:
-      RUNNING_IN_DOCKER: true
       DATAHUB_URL: ${DATAHUB_URL}
       DATAHUB_USERNAME: ${DATAHUB_USERNAME}
       DATAHUB_PASSWORD: ${DATAHUB_PASSWORD}
