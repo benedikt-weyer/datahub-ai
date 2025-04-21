@@ -7,12 +7,23 @@ from flask_cors import CORS
 from llama_index.core.storage.chat_store import SimpleChatStore
 
 from datahub_ai.logic import data_description_logic, query_logic
+import os
 
 
 
 
 # initialize the Flask application with the module name
 app = Flask(__name__)
+
+
+# Check if the application is running in Docker
+is_running_in_docker = os.environ.get('RUNNING_IN_DOCKER', 'false').lower() == 'true'
+
+if is_running_in_docker:
+    print("Running in Docker")
+else:
+    print("Not running in Docker")
+
 
 # enable cors for all api calls from django
 CORS(app, resources={"/api/*": {"origins": ["http://localhost:8000"]}})
