@@ -1,7 +1,7 @@
 from datahub_ai.data_access import datahub_tables_access
 
 
-def get_column_info_from_tables(table_names, without_docker=False):
+def get_column_info_from_tables(table_names):
     table_column_info_map = {}
 
     # get all column names for each table
@@ -14,7 +14,7 @@ def get_column_info_from_tables(table_names, without_docker=False):
 
 
 
-def get_datahub_tables_metadata(without_docker_flag=False):
+def get_datahub_tables_metadata():
 
     datahub_data = datahub_tables_access.get_datahub_table_metadata()
 
