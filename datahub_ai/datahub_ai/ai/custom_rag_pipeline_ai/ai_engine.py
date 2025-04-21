@@ -197,7 +197,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
     for sql_query in sql_queries:
         try:
             # execute the sql query
-            query_result = ai_query_execution.execute_generated_query(sql_query, without_docker=without_docker)
+            query_result = ai_query_execution.execute_generated_query(sql_query)
             # append the query result to the sql_query_results
             sql_query_results.append(query_result)
 
