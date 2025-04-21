@@ -207,7 +207,7 @@ def submit_query(query_string, is_verbose=False, without_docker=False, override_
 
         except Exception:
             # append an error message to the sql_query_results
-            sql_query_results.append(f"Error executing query")
+            sql_query_results.append("Error executing query")
 
     # add sql query results to the verbose output
     verbose_output_string += f"<b>SQL Query Results:</b> {sql_query_results}\n\n"
