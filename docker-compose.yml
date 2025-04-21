@@ -74,8 +74,8 @@ services:
     image: mongo:8.0.8
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ADMIN_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
       MONGO_INITDB_DATABASE: datahub_ai
     ports:
       - 27017:27017
@@ -86,9 +86,9 @@ services:
     image: mongo-express:1.0.2-20-alpine3.19
     restart: unless-stopped
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ADMIN_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ADMIN_PASSWORD}
+      ME_CONFIG_MONGODB_URL: ${MONGODB_URL}
       ME_CONFIG_BASICAUTH: false
     ports:
       - 8081:8081
