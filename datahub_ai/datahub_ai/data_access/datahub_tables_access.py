@@ -3,14 +3,14 @@ from sqlalchemy.orm import sessionmaker as sm
 import os
 
 # Get database connection parameters from environment variables
-db_user = os.environ.get("DB_USER")
-db_pass = os.environ.get("DB_PASSWORD")
-db_host = os.environ.get("DB_HOST")
-db_port = os.environ.get("DB_PORT", "5432")
-db_name = os.environ.get("DB_NAME")
+datahub_db_user = os.environ.get("DATAHUB_DB_USERNAME")
+datahub_db_pass = os.environ.get("DATAHUB_DB_PASSWORD")
+datahub_db_host = os.environ.get("DATAHUB_DB_HOST")
+datahub_db_port = os.environ.get("DATAHUB_DB_PORT", "5432")
+datahub_db_name = os.environ.get("DATAHUB_DB_NAME")
 
-database_url = f'postgresql://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}'
-engine = create_engine(database_url)
+datahub_database_url = f'postgresql://{datahub_db_user}:{datahub_db_pass}@{datahub_db_host}:{datahub_db_port}/{datahub_db_name}'
+engine = create_engine(datahub_database_url)
 
 
 
