@@ -1,6 +1,7 @@
 services:
   datahub:
     image: ghcr.io/datasnack/datahub:0.6.1
+    restart: unless-stopped
     env_file:
       - .env
     ports:
@@ -13,6 +14,7 @@ services:
 
   postgis:
     image: postgis/postgis:16-3.4
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
@@ -25,7 +27,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    restart: always
+    restart: unless-stopped
     ports:
       - "8888:80"
     environment:
@@ -56,7 +58,7 @@ services:
       context: .
 
     #image: llm-query-engine:latest
-    restart: always
+    restart: unless-stopped
     ports:
       - "8001:8001"
     depends_on:
@@ -68,7 +70,7 @@ services:
 
   mongo:
     image: mongo
-    restart: always
+    restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
@@ -80,7 +82,7 @@ services:
 
   mongo-express:
     image: mongo-express
-    restart: always
+    restart: unless-stopped
     ports:
       - 8081:8081
     environment:
