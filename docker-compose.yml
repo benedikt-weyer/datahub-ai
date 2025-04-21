@@ -26,7 +26,7 @@ services:
       - '5432:5432'
 
   pgadmin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:9.2.0
     restart: unless-stopped
     ports:
       - "8888:80"
@@ -36,7 +36,7 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:0.6.6
     ports:
       - 11434:11434/tcp
     volumes:
@@ -69,7 +69,7 @@ services:
     #  - "host.docker.internal:host-gateway"
 
   mongo:
-    image: mongo
+    image: mongo:8.0.8
     restart: unless-stopped
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
@@ -81,7 +81,7 @@ services:
       - mongo:/data/db
 
   mongo-express:
-    image: mongo-express
+    image: mongo-express:1.0.2-20-alpine3.19
     restart: unless-stopped
     ports:
       - 8081:8081
