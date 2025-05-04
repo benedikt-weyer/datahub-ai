@@ -1,6 +1,8 @@
 services:
+
   datahub:
-    image: ghcr.io/datasnack/datahub:latest
+    image: ghcr.io/datasnack/datahub:0.8.5
+    restart: unless-stopped
     env_file:
       - .env
     ports:
@@ -13,19 +15,20 @@ services:
 
   postgis:
     image: postgis/postgis:16-3.4
+    restart: unless-stopped
     environment:
       POSTGRES_DB: ${DB_NAME}
       POSTGRES_USER: ${DB_USER}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdat
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
-    ports: 
+      - pgdata:/var/lib/postgresql/data
+    ports:
       - '5432:5432'
 
   pgadmin:
-    image: dpage/pgadmin4
-    restart: always
+    image: dpage/pgadmin4:9.2.0
+    restart: unless-stopped
     ports:
       - "8888:80"
     environment:
@@ -33,62 +36,78 @@ services:
       PGADMIN_DEFAULT_PASSWORD: "admin"
     volumes:
       - pgadmin-data:/var/lib/pgadmin
+
   ollama:
-    image: ollama/ollama
+    image: ollama/ollama:0.6.6
     ports:
       - 11434:11434/tcp
     volumes:
       - ollama:/root/.ollama
     restart: unless-stopped
-    # runtime: nvidia
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: all # alternatively, use `all` for all GPUs
-    #           capabilities: [gpu]
+    # GPU configuration for ollama - adjust according to your system specifications
+    # (or comment out when wanting to use the cpu (not recomended due to bad performance))
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: cdi
+            capabilities:
+              - gpu
+            device_ids:
+            - nvidia.com/gpu=all
 
   datahub-ai:
-    build: 
+    build:
       dockerfile: ./datahub_ai/Dockerfile
       context: .
-    
-    #image: llm-query-engine:latest
-    restart: always
+    restart: unless-stopped
+    environment:
+      DATAHUB_DB_USERNAME: ${DB_USER}
+      DATAHUB_DB_PASSWORD: ${DB_PASSWORD}
+      DATAHUB_DB_HOST: ${DB_HOST}
+      DATAHUB_DB_PORT: ${DB_PORT}
+      DATAHUB_DB_NAME: ${DB_NAME}
+
+      MONGODB_URL: ${MONGODB_URL}
+      MONGODB_HOST: ${MONGODB_HOST}
+      MONGODB_PORT: ${MONGODB_PORT}
+      MONGODB_USERNAME: ${MONGODB_ADMIN_USERNAME}
+      MONGODB_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
     ports:
       - "8001:8001"
     depends_on:
       - postgis
       - ollama
-    # used when wanting to connect to (kubernetes) proxy running on local machine 
+    # used when wanting to connect to (kubernetes) proxy running on local machine
     #extra_hosts:
     #  - "host.docker.internal:host-gateway"
 
   mongo:
-    image: mongo
-    restart: always
+    image: mongo:8.0.8
+    restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_ADMIN_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
       MONGO_INITDB_DATABASE: datahub_ai
     ports:
       - 27017:27017
-    volumes: 
+    volumes:
       - mongo:/data/db
 
   mongo-express:
-    image: mongo-express
-    restart: always
+    image: mongo-express:1.0.2-20-alpine3.19
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_ADMIN_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_ADMIN_PASSWORD}
+      ME_CONFIG_MONGODB_URL: ${MONGODB_URL}
+      ME_CONFIG_BASICAUTH: false
     ports:
       - 8081:8081
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
-      ME_CONFIG_BASICAUTH: false
+
 
 volumes:
   ollama:
   pgadmin-data:
   mongo:
+  pgdata:
