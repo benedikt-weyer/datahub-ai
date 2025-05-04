@@ -1,17 +1,19 @@
-### Objective
+# DataHub AI
+
+## Objective
 
 The goal of this project is to improve data provision in the public health sector through the use of Artificial Intelligence (AI), specifically for the [Datahub](https://github.com/datasnack/datahub). We are developing a ChatBot that simplifies the exploration of and queries to data sets within the DataHub. Using AI, we enable users without deep technical knowledge – such as researchers or public health actors – to explore data using natural language.
 
-### Installation Guide
+## Installation Guide
 
-The detailed installation guide can be found in our [Documentation](https://github.com/benedikt-weyer/datahub-ai/wiki/Documentation).
+The detailed installation guide can be found in our [User Documentation](https://github.com/benedikt-weyer/datahub-ai/wiki/User-Docs).
 
-### Contributing
+## Contributing and Development Environment
 
-We welcome contributions from the community! If you are interested in assisting with the development of this project, please refer to our [Contribution Guidelines](CONTRIBUTING.md) for more information on how to get started. Details on setting up your development environment can be found in the [Installation Guide](https://github.com/benedikt-weyer/datahub-ai/wiki/Documentation).
+We welcome contributions from the community! If you are interested in assisting with the development of this project, please refer to our [Contribution Guidelines](CONTRIBUTING.md) for more information on how to get started. Details on setting up your development environment can be found in the [Developer Documentation](https://github.com/benedikt-weyer/datahub-ai/wiki/Developer-Docs).
 
 
-### Team Members and Roles
+## Team Members and Roles
 
 Our team consists of 4 people from 3 disciplines:
 
@@ -20,7 +22,7 @@ Our team consists of 4 people from 3 disciplines:
 -   Jan Biedasiek, Computer Science of Technical Systems, responsible for testing our systems
 -   Yunus Sözeri, Business Informatics, responsible for the user interface and documentation
 
-### Design
+## Design
 
 **User Interface & System Architecture**
 
@@ -30,19 +32,19 @@ The system architecture is based on containers (e.g., Docker). This container-ba
 
 The flow of a request begins at the user interface embedded in Datahub. From there, user inputs are forwarded to the backend. Various containers handle specific tasks: data storage, providing interfaces for the AI module, and processing requests through the AI module itself. The AI module analyzes the natural language request, accesses the relevant data, and performs aggregations or other calculations as needed to generate an appropriate response.
 
-### Data Acquisition
+## Data Acquisition
 
 The data used for this project comes from the Datahub, an open-source application. Specifically, we use sample data (Ghana dataset) provided through Datahub's 'Datasnack' functionality.
 
-### Evaluation
+## Evaluation
 
 The core component of our application is a Large Language Model (LLM) hosted locally. The ChatBot is integrated as an extension into Datahub's Django application and is accessible via its user interface. Further technical details can be found in the [Documentation](https://github.com/benedikt-weyer/datahub-ai/wiki/Documentation). The project repository is available under the MIT license. A focus of the development is on local usability; an internet connection is only required once during the initial setup.
 
-### Known Issues
+## Known Issues
 
 Currently, the challenge is that the LLM attempts to answer general, non-data-related questions incorrectly using SQL queries. This affects the naturalness of the interaction and potentially the robustness against incorrect or ambiguous requests.
 
-### Future Enhancements
+## Future Enhancements
 
 The following further developments are planned:
 
